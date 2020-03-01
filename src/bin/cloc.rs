@@ -9,7 +9,7 @@ fn main() {
     let Options { entry } = opt;
 
     let engine = Engine::new(entry);
-    let detail = engine.calculate();
+    let details = engine.calculate();
 
-    println!("{:?}", detail);
+    println!("{:?}", details);
 }

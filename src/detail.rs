@@ -1,3 +1,5 @@
+use std::ops::Add;
+
 #[derive(Debug, PartialEq)]
 pub struct Detail {
     language: &'static str,
@@ -13,6 +15,19 @@ impl Detail {
             blank,
             comment,
             code,
+        }
+    }
+}
+
+impl Add for Detail {
+    type Output = Detail;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Self::Output {
+            language: self.language,
+            blank: self.blank + rhs.blank,
+            comment: self.comment + rhs.comment,
+            code: self.code + rhs.comment,
         }
     }
 }

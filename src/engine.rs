@@ -1,8 +1,12 @@
 use std::fs;
+use std::mem;
 use std::path::PathBuf;
+use std::sync::mpsc::{sync_channel, SyncSender};
+use std::sync::{Arc, Mutex, RwLock};
 
 use crate::config::{Config, Info};
 use crate::detail::Detail;
+use crate::executor::ThreadPoolExecutor;
 
 #[derive(Debug)]
 pub struct Engine {
@@ -18,15 +22,54 @@ impl Engine {
         }
     }
 
-    pub fn calculate(self) -> Detail {
+    pub fn calculate(self) -> Vec<Detail> {
+        let executor = ThreadPoolExecutor::new();
         let Engine { config, entry } = self;
 
-        // TODO: refactor
-        let ext = entry.extension().unwrap();
-        let ext = ext.to_str().unwrap();
-        let info = config.get(ext).unwrap().clone();
+        let config = Arc::new(RwLock::new(config));
+        let (sender, receiver) = sync_channel(1024);
+        let receiver = Arc::new(Mutex::new(receiver));
 
-        calculate(entry, info)
+        executor.submit(move || explore(entry, &sender));
+
+        let details = Arc::new(Mutex::new(Vec::new()));
+        for _ in 0..(executor.capacity() - 1) {
+            let receiver = Arc::clone(&receiver);
+            let config = Arc::clone(&config);
+            let details = Arc::clone(&details);
+
+            executor.submit(move || {
+                for path in receiver.lock().unwrap().recv() {
+                    // TODO: refactor
+                    let ext = path.extension().unwrap().to_str().unwrap();
+                    let info = config.read().unwrap().get(ext).unwrap().clone();
+                    details.lock().unwrap().push(calculate(path, info));
+                }
+            });
+        }
+        mem::drop(executor);
+
+        Arc::try_unwrap(details).unwrap().into_inner().unwrap()
+    }
+}
+
+fn explore(dir: PathBuf, sender: &SyncSender<PathBuf>) {
+    // TODO: refactor
+    if dir.is_file() {
+        sender.send(dir).unwrap();
+    } else if dir.is_dir() {
+        let entries = fs::read_dir(dir).unwrap();
+        for entry in entries {
+            let entry = entry.unwrap();
+
+            let path = entry.path();
+            if path.is_file() {
+                // TODO: remove unwrap
+                sender.send(path).unwrap();
+            } else if path.is_dir() {
+                explore(path, sender);
+            }
+        }
     }
 }
 

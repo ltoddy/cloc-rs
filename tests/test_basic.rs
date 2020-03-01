@@ -37,7 +37,7 @@ pub mod tests {
 
         let actual = engine.calculate();
 
-        let expected = Detail::new("Rust", 16, 7, 75);
+        let expected = vec![Detail::new("Rust", 16, 7, 75)];
 
         assert_eq!(expected, actual);
     }
