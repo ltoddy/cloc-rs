@@ -1,32 +1,39 @@
 use std::fs;
 use std::path::PathBuf;
 
+use crate::config::{Config, Info};
 use crate::detail::Detail;
 
 #[derive(Debug)]
 pub struct Engine {
+    config: Config,
     entry: PathBuf,
 }
 
 impl Engine {
     pub fn new(entry: PathBuf) -> Self {
-        Self { entry }
+        Self {
+            config: Config::new(),
+            entry,
+        }
     }
 
     pub fn calculate(self) -> Detail {
-        let Engine { entry } = self;
+        let Engine { config, entry } = self;
 
-        calculate(entry)
+        // TODO: refactor
+        let ext = entry.extension().unwrap();
+        let ext = ext.to_str().unwrap();
+        let info = config.get(ext).unwrap().clone();
+
+        calculate(entry, info)
     }
 }
 
-fn calculate(path: PathBuf) -> Detail {
-    // hard code, temporarily
-    let language = "Rust";
-    let single_comment = vec!["//", "///", "///!"];
-    let multi_comment = vec![("/*", "*/")];
-
-    // --------------------------------------
+fn calculate(path: PathBuf, info: Info) -> Detail {
+    let Info {
+        name, single, multi, ..
+    } = info;
 
     let content = fs::read_to_string(path).unwrap(); // TODO: remove unwrap
     let mut blank = 0;
@@ -44,7 +51,7 @@ fn calculate(path: PathBuf) -> Detail {
         }
 
         // match single line comments
-        for single in &single_comment {
+        for single in &single {
             if line.starts_with(single) {
                 comment += 1;
                 continue 'here;
@@ -52,7 +59,7 @@ fn calculate(path: PathBuf) -> Detail {
         }
 
         // match multi line comments
-        for (start, end) in &multi_comment {
+        for (start, end) in &multi {
             if let Some(d) = in_comment {
                 if d != (start, end) {
                     continue;
@@ -94,5 +101,5 @@ fn calculate(path: PathBuf) -> Detail {
         code += 1;
     }
 
-    Detail::new(language, blank, comment, code)
+    Detail::new(name.as_str(), blank, comment, code)
 }
