@@ -1,30 +1,7 @@
 use std::collections::HashMap;
 use std::iter::FromIterator;
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub enum Language {
-    Go,
-    Rust,
-}
-
-impl From<&str> for Language {
-    fn from(ext: &str) -> Self {
-        match ext {
-            "Go" | "go" => Language::Go,
-            "Rust" | "rs" => Language::Rust,
-            _ => unimplemented!(),
-        }
-    }
-}
-
-impl Language {
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            Language::Rust => "Rust",
-            Language::Go => "Go",
-        }
-    }
-}
+use crate::Language;
 
 #[derive(Debug, Clone)]
 pub struct Info {

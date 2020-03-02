@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::ops::Add;
 
-use crate::config::Language;
+use crate::Language;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Detail {
