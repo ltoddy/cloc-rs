@@ -1,11 +1,14 @@
+use std::collections::HashMap;
 use std::ops::Add;
 
-#[derive(Debug, PartialEq)]
+use crate::config::Language;
+
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Detail {
-    language: &'static str,
-    blank: i32,
-    comment: i32,
-    code: i32,
+    pub language: &'static str,
+    pub blank: i32,
+    pub comment: i32,
+    pub code: i32,
 }
 
 impl Detail {
@@ -27,7 +30,34 @@ impl Add for Detail {
             language: self.language,
             blank: self.blank + rhs.blank,
             comment: self.comment + rhs.comment,
-            code: self.code + rhs.comment,
+            code: self.code + rhs.code,
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct TotalDetail {
+    pub inner: HashMap<Language, Detail>,
+}
+
+impl TotalDetail {
+    pub fn from_details(details: Vec<Detail>) -> Self {
+        let mut total = Self { inner: HashMap::new() };
+
+        for detail in details {
+            total.add(detail);
+        }
+
+        total
+    }
+
+    fn add(&mut self, detail: Detail) {
+        let language = Language::from(detail.language);
+
+        if let Some(d) = self.inner.get(&language) {
+            self.inner.insert(language, *d + detail);
+        } else {
+            self.inner.insert(language, detail);
         }
     }
 }

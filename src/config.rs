@@ -3,13 +3,15 @@ use std::iter::FromIterator;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Language {
+    Go,
     Rust,
 }
 
 impl From<&str> for Language {
-    fn from(source: &str) -> Self {
-        match source {
-            "rs" => Language::Rust,
+    fn from(ext: &str) -> Self {
+        match ext {
+            "Go" | "go" => Language::Go,
+            "Rust" | "rs" => Language::Rust,
             _ => unimplemented!(),
         }
     }
@@ -19,6 +21,7 @@ impl Language {
     pub fn as_str(&self) -> &'static str {
         match self {
             Language::Rust => "Rust",
+            Language::Go => "Go",
         }
     }
 }
@@ -56,12 +59,10 @@ impl Config {
         use self::Language::*;
 
         Self {
-            languages: HashMap::from_iter(vec![language!(
-                Rust,
-                vec!["rs"],
-                vec!["//", "///", "///!"],
-                vec![("/*", "*/")]
-            )]),
+            languages: HashMap::from_iter(vec![
+                language!(Go, vec!["go"], vec!["//"], vec![("/*", "*/"), ("/**", "*/")]),
+                language!(Rust, vec!["rs"], vec!["//", "///", "///!"], vec![("/*", "*/")]),
+            ]),
         }
     }
 
