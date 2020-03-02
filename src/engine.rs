@@ -1,6 +1,7 @@
 use std::fs;
 use std::mem;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::mpsc::{sync_channel, SyncSender};
 use std::sync::{Arc, Mutex, RwLock};
 
@@ -12,6 +13,8 @@ use crate::executor::ThreadPoolExecutor;
 pub struct Engine {
     config: Config,
     entry: PathBuf,
+    total_text_files: AtomicUsize,
+    ignored_files: AtomicUsize,
 }
 
 impl Engine {
@@ -19,14 +22,23 @@ impl Engine {
         Self {
             config: Config::default(),
             entry,
+            total_text_files: AtomicUsize::new(0),
+            ignored_files: AtomicUsize::new(0),
         }
     }
 
-    pub fn calculate(self) -> Vec<Detail> {
+    pub fn calculate(self) -> (Vec<Detail>, usize, usize) {
         let executor = ThreadPoolExecutor::new();
-        let Engine { config, entry } = self;
+        let Engine {
+            config,
+            entry,
+            total_text_files,
+            ignored_files,
+        } = self;
 
         let config = Arc::new(RwLock::new(config));
+        let total_text_files = Arc::new(total_text_files);
+        let ignored_files = Arc::new(ignored_files);
         let (sender, receiver) = sync_channel(1024);
         let receiver = Arc::new(Mutex::new(receiver));
 
@@ -36,20 +48,45 @@ impl Engine {
         for _ in 0..(executor.capacity() - 1) {
             let receiver = Arc::clone(&receiver);
             let config = Arc::clone(&config);
+            let total_text_files = Arc::clone(&total_text_files);
+            let ignored_files = Arc::clone(&ignored_files);
             let details = Arc::clone(&details);
 
             executor.submit(move || {
                 for path in receiver.lock().unwrap().recv() {
-                    // TODO: refactor
-                    let ext = path.extension().unwrap().to_str().unwrap();
-                    let info = config.read().unwrap().get(ext).unwrap().clone();
-                    details.lock().unwrap().push(calculate(path, info));
+                    total_text_files.fetch_add(1, Ordering::SeqCst);
+
+                    let ext = match path.extension() {
+                        Some(ext) => ext.to_str().unwrap(),
+                        None => {
+                            ignored_files.fetch_add(1, Ordering::SeqCst);
+                            continue;
+                        }
+                    };
+
+                    let info = match config.read().unwrap().get(ext) {
+                        Some(info) => info.clone(),
+                        None => {
+                            ignored_files.fetch_add(1, Ordering::SeqCst);
+                            continue;
+                        }
+                    };
+
+                    if let Some(detail) = calculate(path, info) {
+                        details.lock().unwrap().push(detail);
+                    } else {
+                        ignored_files.fetch_add(1, Ordering::SeqCst);
+                    }
                 }
             });
         }
         mem::drop(executor);
 
-        Arc::try_unwrap(details).unwrap().into_inner().unwrap()
+        (
+            Arc::try_unwrap(details).unwrap().into_inner().unwrap(),
+            Arc::try_unwrap(total_text_files).unwrap().into_inner(),
+            Arc::try_unwrap(ignored_files).unwrap().into_inner(),
+        )
     }
 }
 
@@ -73,10 +110,32 @@ fn explore(dir: PathBuf, sender: &SyncSender<PathBuf>) {
     }
 }
 
-fn calculate(path: PathBuf, info: Info) -> Detail {
+fn is_text_file<P: AsRef<Path>>(path: P) -> bool {
+    // TODO
+    // check:
+    // 1. permission (can access)
+    // 2. ascii text
+    // 3. symlink
+    let path = path.as_ref();
+    if let Ok(metadata) = path.metadata() {
+        let file_type = metadata.file_type();
+
+        if file_type.is_symlink() {
+            return false;
+        }
+    }
+
+    true
+}
+
+fn calculate(path: PathBuf, info: Info) -> Option<Detail> {
     let Info {
         name, single, multi, ..
     } = info;
+
+    if !is_text_file(&path) {
+        return None;
+    }
 
     let content = fs::read_to_string(path).unwrap(); // TODO: remove unwrap
     let mut blank = 0;
@@ -144,5 +203,5 @@ fn calculate(path: PathBuf, info: Info) -> Detail {
         code += 1;
     }
 
-    Detail::new(name.as_str(), blank, comment, code)
+    Some(Detail::new(name.as_str(), blank, comment, code))
 }

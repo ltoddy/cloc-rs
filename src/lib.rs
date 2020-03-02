@@ -10,6 +10,8 @@ pub mod pprint;
 pub enum Language {
     Go,
     Rust,
+
+    Illegal,
 }
 
 impl From<&str> for Language {
@@ -17,7 +19,7 @@ impl From<&str> for Language {
         match ext_or_name {
             "Go" | "go" => Language::Go,
             "Rust" | "rs" => Language::Rust,
-            _ => unimplemented!(),
+            _ => Language::Illegal,
         }
     }
 }
@@ -27,6 +29,8 @@ impl Language {
         match self {
             Language::Rust => "Rust",
             Language::Go => "Go",
+
+            Language::Illegal => "Illegal", // TODO
         }
     }
 }
