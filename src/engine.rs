@@ -17,7 +17,7 @@ pub struct Engine {
 impl Engine {
     pub fn new(entry: PathBuf) -> Self {
         Self {
-            config: Config::new(),
+            config: Config::default(),
             entry,
         }
     }

@@ -1,5 +1,3 @@
-use std::fmt;
-
 pub mod config;
 pub mod detail;
 pub mod engine;

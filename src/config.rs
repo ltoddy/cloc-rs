@@ -31,8 +31,8 @@ pub struct Config {
     pub languages: HashMap<Language, Info>,
 }
 
-impl Config {
-    pub fn new() -> Self {
+impl Default for Config {
+    fn default() -> Self {
         use self::Language::*;
 
         Self {
@@ -42,7 +42,9 @@ impl Config {
             ]),
         }
     }
+}
 
+impl Config {
     pub fn get(&self, ext: &str) -> Option<&Info> {
         self.languages.get(&Language::from(ext))
     }
