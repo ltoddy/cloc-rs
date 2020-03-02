@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::ffi::OsStr;
 use std::iter::FromIterator;
 
 use crate::Language;
@@ -45,7 +46,8 @@ impl Default for Config {
 }
 
 impl Config {
-    pub fn get(&self, ext: &str) -> Option<&Info> {
-        self.languages.get(&Language::from(ext))
+    pub fn get_by_extension(&self, ext: Option<&OsStr>) -> Option<&Info> {
+        ext.and_then(|ext| ext.to_str())
+            .and_then(|ext| self.languages.get(&Language::from(ext)))
     }
 }

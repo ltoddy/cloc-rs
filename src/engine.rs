@@ -56,15 +56,7 @@ impl Engine {
                 for path in receiver.lock().unwrap().recv() {
                     total_text_files.fetch_add(1, Ordering::SeqCst);
 
-                    let ext = match path.extension() {
-                        Some(ext) => ext.to_str().unwrap(),
-                        None => {
-                            ignored_files.fetch_add(1, Ordering::SeqCst);
-                            continue;
-                        }
-                    };
-
-                    let info = match config.read().unwrap().get(ext) {
+                    let info = match config.read().unwrap().get_by_extension(path.extension()) {
                         Some(info) => info.clone(),
                         None => {
                             ignored_files.fetch_add(1, Ordering::SeqCst);
