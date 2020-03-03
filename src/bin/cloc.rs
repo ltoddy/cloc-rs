@@ -19,5 +19,6 @@ fn main() {
 
     match output {
         Output::Terminal => PrettyPrinter::terminal(total, total_text_files, ignored_files, elapsed),
+        Output::Markdown => PrettyPrinter::markdown(total, total_text_files, ignored_files, elapsed),
     }
 }
