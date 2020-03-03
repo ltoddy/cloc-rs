@@ -35,14 +35,25 @@ impl Add for Detail {
     }
 }
 
+#[derive(Debug, Default)]
+pub struct SumDetail {
+    pub blank: i32,
+    pub comment: i32,
+    pub code: i32,
+}
+
 #[derive(Debug)]
 pub struct TotalDetail {
     pub inner: HashMap<Language, Detail>,
+    pub sum: SumDetail,
 }
 
 impl TotalDetail {
     pub fn from_details(details: Vec<Detail>) -> Self {
-        let mut total = Self { inner: HashMap::new() };
+        let mut total = Self {
+            inner: HashMap::new(),
+            sum: SumDetail::default(),
+        };
 
         for detail in details {
             total.add(detail);
@@ -53,6 +64,9 @@ impl TotalDetail {
 
     fn add(&mut self, detail: Detail) {
         let language = Language::from(detail.language);
+        self.sum.blank += detail.blank;
+        self.sum.comment += detail.comment;
+        self.sum.code += detail.code;
 
         if let Some(d) = self.inner.get(&language) {
             self.inner.insert(language, *d + detail);

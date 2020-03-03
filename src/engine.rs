@@ -7,7 +7,9 @@ use std::sync::{Arc, Mutex, RwLock};
 
 use crate::config::{Config, Info};
 use crate::detail::Detail;
+use crate::error::ClocError;
 use crate::executor::ThreadPoolExecutor;
+use crate::ClocResult;
 
 #[derive(Debug)]
 pub struct Engine {
@@ -64,7 +66,7 @@ impl Engine {
                         }
                     };
 
-                    if let Some(detail) = calculate(path, info) {
+                    if let Ok(detail) = calculate(path, info) {
                         details.lock().unwrap().push(detail);
                     } else {
                         ignored_files.fetch_add(1, Ordering::SeqCst);
@@ -120,16 +122,16 @@ fn is_text_file<P: AsRef<Path>>(path: P) -> bool {
     true
 }
 
-fn calculate(path: PathBuf, info: Info) -> Option<Detail> {
+fn calculate(path: PathBuf, info: Info) -> ClocResult<Detail> {
     let Info {
         name, single, multi, ..
     } = info;
 
     if !is_text_file(&path) {
-        return None;
+        return Err(ClocError::NonTextFile);
     }
 
-    let content = fs::read_to_string(path).unwrap(); // TODO: remove unwrap
+    let content = fs::read_to_string(path)?;
     let mut blank = 0;
     let mut comment = 0;
     let mut code = 0;
@@ -195,5 +197,5 @@ fn calculate(path: PathBuf, info: Info) -> Option<Detail> {
         code += 1;
     }
 
-    Some(Detail::new(name.as_str(), blank, comment, code))
+    Ok(Detail::new(name.as_str(), blank, comment, code))
 }

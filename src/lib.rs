@@ -35,4 +35,4 @@ impl Language {
     }
 }
 
-type Result<T> = std::result::Result<T, crate::error::ClocError>;
+pub type ClocResult<T> = std::result::Result<T, crate::error::ClocError>;

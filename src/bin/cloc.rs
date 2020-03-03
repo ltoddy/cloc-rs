@@ -2,7 +2,7 @@ use structopt::StructOpt;
 
 use cloc::detail::TotalDetail;
 use cloc::engine::Engine;
-use cloc::options::Options;
+use cloc::options::{Options, Output};
 use cloc::pprint::PrettyPrinter;
 
 fn main() {
@@ -13,8 +13,7 @@ fn main() {
     let (details, total_text_files, ignored_files) = engine.calculate();
     let total = TotalDetail::from_details(details);
 
-    // TODO
-    println!("total_text_files ==> {}", total_text_files);
-    println!("ignored_files ==> {}", ignored_files);
-    PrettyPrinter::terminal(total);
+    match output {
+        Output::Terminal => PrettyPrinter::terminal(total, total_text_files, ignored_files),
+    }
 }
