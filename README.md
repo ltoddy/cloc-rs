@@ -52,3 +52,12 @@ cargo install --path .
 - 第二个参数: 这个语言文件的文件后缀
 - 第三个参数: 这个语言的单行注释
 - 第四个参数: 这个语言的多行注释(没有的话就用`vec![]`)
+
+### TODO
+
+- [ ] 统计结果可以生成Markdown, Html文件(由参数--output=(Markdown)|(Html) 指定)
+- [ ] 统计结果可以按照顺序排列(sort_by: language name, code, comment ..., 由参数--sort-by指定)
+- [ ] 优化代码最终统计详情的聚合方式
+- [ ] 去除代码中使用的`unwrap()`
+- [ ] 添加更多语言的统计规则
+- [ ] ...
