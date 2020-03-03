@@ -38,7 +38,6 @@ impl ToString for Output {
     author = "ltoddy - toddy.liu@outlook.com"
 )]
 pub struct Options {
-    // TODO: output format
     #[structopt(
         short = "o",
         long = "output",

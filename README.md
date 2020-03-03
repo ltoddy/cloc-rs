@@ -42,9 +42,12 @@ cargo install --path .
 
 ### 如何贡献(更多语言支持)
 
-在`src/config.rs`文件中, `Config`结构体的`default`方法中, 使用`language!`宏来定义规则.
+- 在`src/config.rs`文件中, `Config`结构体的`default`方法中, 使用`language!`宏来定义规则.
 
 > language!($name, $ext, $single, $multi)
+
+- 在`src/lib.rs`文件中,为枚举`Language`添加对应的成员.
+
 
 参数解释:
 

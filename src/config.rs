@@ -38,6 +38,10 @@ impl Default for Config {
 
         Self {
             languages: HashMap::from_iter(vec![
+                language!(C, vec!["c"], vec!["//"], vec![("/*", "*/")]),
+                language!(CHeader, vec!["h"], vec!["//"], vec![("/*", "*/")]),
+                language!(Cpp, vec!["cpp"], vec!["//"], vec![("/*", "*/")]),
+                language!(CppHeader, vec!["hpp"], vec!["//"], vec![("/*", "*/")]),
                 language!(Go, vec!["go"], vec!["//"], vec![("/*", "*/"), ("/**", "*/")]),
                 language!(Rust, vec!["rs"], vec!["//", "///", "///!"], vec![("/*", "*/")]),
             ]),
