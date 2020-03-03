@@ -35,7 +35,7 @@ pub mod tests {
         let base = BaseTester::with_single_file("rust.rs");
         let engine = Engine::new(base.path);
 
-        let actual = engine.calculate();
+        let (actual, ..) = engine.calculate();
 
         let expected = vec![Detail::new("Rust", 16, 7, 75)];
 
