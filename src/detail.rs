@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::ops::Add;
+use std::ops::AddAssign;
 
 use crate::Language;
 
@@ -20,18 +20,22 @@ impl Detail {
             code,
         }
     }
+
+    pub fn from_other(other: &Detail) -> Self {
+        Self {
+            language: other.language,
+            blank: 0,
+            comment: 0,
+            code: 0,
+        }
+    }
 }
 
-impl Add for Detail {
-    type Output = Detail;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Self::Output {
-            language: self.language,
-            blank: self.blank + rhs.blank,
-            comment: self.comment + rhs.comment,
-            code: self.code + rhs.code,
-        }
+impl AddAssign for Detail {
+    fn add_assign(&mut self, rhs: Self) {
+        self.blank += rhs.blank;
+        self.comment += rhs.comment;
+        self.code += rhs.code;
     }
 }
 
@@ -68,10 +72,6 @@ impl TotalDetail {
         self.sum.comment += detail.comment;
         self.sum.code += detail.code;
 
-        if let Some(d) = self.inner.get(&language) {
-            self.inner.insert(language, *d + detail);
-        } else {
-            self.inner.insert(language, detail);
-        }
+        *self.inner.entry(language).or_insert(Detail::from_other(&detail)) += detail;
     }
 }
