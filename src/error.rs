@@ -5,7 +5,7 @@ use std::io::Error;
 pub enum ClocError {
     Unrecognized,
     NonTextFile,
-    Io,
+    Io(std::io::Error),
 }
 
 impl std::error::Error for ClocError {}
@@ -16,13 +16,13 @@ impl fmt::Display for ClocError {
         match self {
             ClocError::Unrecognized => write!(f, "Unrecognized"),
             ClocError::NonTextFile => write!(f, "NonTextFile"),
-            ClocError::Io => write!(f, "Io"),
+            ClocError::Io(_) => write!(f, "Io"),
         }
     }
 }
 
 impl From<std::io::Error> for ClocError {
     fn from(e: Error) -> Self {
-        ClocError::Io
+        ClocError::Io(e)
     }
 }

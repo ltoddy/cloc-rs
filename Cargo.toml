@@ -3,6 +3,18 @@ name = "cloc"
 version = "0.1.0"
 authors = ["ltoddy <taoliu0509@gmail.com>"]
 edition = "2018"
+license = "MIT"
+readme = "README.md"
+keywords = ["cloc"]
+description = "Count, or compute differences of, lines of source code and comments."
+repository = "https://github.com/ltoddy/cloc-rs"
+
+include = [
+    "src/**/*.rs",
+    "Cargo.toml",
+    "LICENSE",
+    "README.md"
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
