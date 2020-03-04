@@ -17,20 +17,26 @@ impl PrettyPrinter {
         println!();
 
         println!("{:>12.4} secs", elapsed.as_secs_f64());
-        println!("┌────────────────────────────────────────────────────┐");
-        println!("| {:<14}{:>12}{:>12}{:>12} |", "Language", "Code", "Comment", "Blank");
-        println!("├────────────────────────────────────────────────────┤");
+        println!("┌────────────────────────────────────────────────────────────────┐");
+        println!(
+            "| {:<14}{:>12}{:>12}{:>12}{:>12} |",
+            "Language", "Size", "Code", "Comment", "Blank"
+        );
+        println!("├────────────────────────────────────────────────────────────────┤");
 
         for detail in kinds.values() {
             println!(
-                "| {:<14}{:>12}{:>12}{:>12} |",
-                detail.language, detail.code, detail.comment, detail.blank,
+                "| {:<14}{:>12}{:>12}{:>12}{:>12} |",
+                detail.language, bytes_to_size(detail.bytes as f64), detail.code, detail.comment, detail.blank,
             );
         }
 
-        println!("├────────────────────────────────────────────────────┤");
-        println!("| {:<14}{:>12}{:>12}{:>12} |", "Sum", sum.code, sum.comment, sum.blank);
-        println!("└────────────────────────────────────────────────────┘");
+        println!("├────────────────────────────────────────────────────────────────┤");
+        println!(
+            "| {:<14}{:>12}{:>12}{:>12}{:>12} |",
+            "Sum", bytes_to_size(sum.bytes as f64), sum.code, sum.comment, sum.blank
+        );
+        println!("└────────────────────────────────────────────────────────────────┘");
     }
 
     // TODO
@@ -68,4 +74,15 @@ impl PrettyPrinter {
 
         file.write_all(template.as_bytes()).unwrap();
     }
+}
+
+const SIZES: [&str; 9] = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+fn bytes_to_size(bytes: f64) -> String {
+    let k = 1024_f64;
+    if bytes <= 1_f64 {
+        return format!("{:.2} B", bytes);
+    }
+    let i = (bytes.ln() / k.ln()) as i32;
+    format!("{:.2} {}", bytes / k.powi(i), SIZES[i as usize])
 }

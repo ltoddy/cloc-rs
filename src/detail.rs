@@ -6,15 +6,17 @@ use crate::Language;
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Detail {
     pub language: &'static str,
-    pub blank: i32,
-    pub comment: i32,
-    pub code: i32,
+    pub bytes: u64,
+    pub blank: usize,
+    pub comment: usize,
+    pub code: usize,
 }
 
 impl Detail {
-    pub fn new(language: &'static str, blank: i32, comment: i32, code: i32) -> Self {
+    pub fn new(language: &'static str, bytes: u64, blank: usize, comment: usize, code: usize) -> Self {
         Self {
             language,
+            bytes,
             blank,
             comment,
             code,
@@ -24,6 +26,7 @@ impl Detail {
     pub fn from_other(other: &Detail) -> Self {
         Self {
             language: other.language,
+            bytes: 0,
             blank: 0,
             comment: 0,
             code: 0,
@@ -33,6 +36,7 @@ impl Detail {
 
 impl AddAssign for Detail {
     fn add_assign(&mut self, rhs: Self) {
+        self.bytes += rhs.bytes;
         self.blank += rhs.blank;
         self.comment += rhs.comment;
         self.code += rhs.code;
@@ -41,9 +45,10 @@ impl AddAssign for Detail {
 
 #[derive(Debug, Default)]
 pub struct SumDetail {
-    pub blank: i32,
-    pub comment: i32,
-    pub code: i32,
+    pub bytes: u64,
+    pub blank: usize,
+    pub comment: usize,
+    pub code: usize,
 }
 
 #[derive(Debug)]
@@ -68,6 +73,7 @@ impl TotalDetail {
 
     fn add(&mut self, detail: Detail) {
         let language = Language::from(detail.language);
+        self.sum.bytes += detail.bytes;
         self.sum.blank += detail.blank;
         self.sum.comment += detail.comment;
         self.sum.code += detail.code;

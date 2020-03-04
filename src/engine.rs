@@ -131,7 +131,9 @@ fn calculate(path: PathBuf, info: Info) -> ClocResult<Detail> {
         return Err(ClocError::NonTextFile);
     }
 
-    let content = fs::read_to_string(path)?;
+    let content = fs::read_to_string(&path)?;
+    let metadata = path.metadata()?;
+    let bytes = metadata.len();
     let mut blank = 0;
     let mut comment = 0;
     let mut code = 0;
@@ -197,5 +199,5 @@ fn calculate(path: PathBuf, info: Info) -> ClocResult<Detail> {
         code += 1;
     }
 
-    Ok(Detail::new(name.as_str(), blank, comment, code))
+    Ok(Detail::new(name.as_str(), bytes, blank, comment, code))
 }
