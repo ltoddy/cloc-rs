@@ -9,7 +9,7 @@ use cloc::pprint::PrettyPrinter;
 
 fn main() {
     let opt: Options = Options::from_args();
-    let Options { entry, output } = opt;
+    let Options { entry, output, .. } = opt;
 
     let engine = Engine::new(entry);
     let now = time::Instant::now();

@@ -27,14 +27,22 @@ impl PrettyPrinter {
         for detail in kinds.values() {
             println!(
                 "| {:<14}{:>12}{:>12}{:>12}{:>12} |",
-                detail.language, bytes_to_size(detail.bytes as f64), detail.code, detail.comment, detail.blank,
+                detail.language,
+                bytes_to_size(detail.bytes as f64),
+                detail.code,
+                detail.comment,
+                detail.blank,
             );
         }
 
         println!("├────────────────────────────────────────────────────────────────┤");
         println!(
             "| {:<14}{:>12}{:>12}{:>12}{:>12} |",
-            "Sum", bytes_to_size(sum.bytes as f64), sum.code, sum.comment, sum.blank
+            "Sum",
+            bytes_to_size(sum.bytes as f64),
+            sum.code,
+            sum.comment,
+            sum.blank
         );
         println!("└────────────────────────────────────────────────────────────────┘");
     }

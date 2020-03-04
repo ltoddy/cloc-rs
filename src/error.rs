@@ -6,6 +6,7 @@ pub enum ClocError {
     Unrecognized,
     NonTextFile,
     Io(std::io::Error),
+    InvalidCommandArgs,
 }
 
 impl std::error::Error for ClocError {}
@@ -17,6 +18,7 @@ impl fmt::Display for ClocError {
             ClocError::Unrecognized => write!(f, "Unrecognized"),
             ClocError::NonTextFile => write!(f, "NonTextFile"),
             ClocError::Io(_) => write!(f, "Io"),
+            InvalidCommandArgs => todo!()
         }
     }
 }
