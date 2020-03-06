@@ -6,7 +6,7 @@ pub mod executor;
 pub mod options;
 pub mod pprint;
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Language {
     C,
     CHeader,

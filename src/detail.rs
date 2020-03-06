@@ -3,6 +3,7 @@ use std::ops::AddAssign;
 
 use crate::Language;
 
+/// 读取单个文件, 分析后得出的详情
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Detail {
     pub language: &'static str,
@@ -43,6 +44,37 @@ impl AddAssign for Detail {
     }
 }
 
+/// 基于语言分类之后的详情
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct LanguageDetail {
+    pub language: Language,
+    pub bytes: u64,
+    pub code: usize,
+    pub comment: usize,
+    pub blank: usize,
+}
+
+impl LanguageDetail {
+    fn from_detail_by_default(detail: Detail) -> Self {
+        Self {
+            language: Language::from(detail.language),
+            bytes: detail.bytes,
+            code: detail.code,
+            comment: detail.comment,
+            blank: detail.blank,
+        }
+    }
+
+    fn add_detail(&mut self, detail: Detail) {
+        assert_eq!(self.language.as_str(), detail.language);
+
+        self.bytes += detail.bytes;
+        self.code += detail.code;
+        self.comment += detail.comment;
+        self.blank += detail.blank;
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct SumDetail {
     pub bytes: u64,
@@ -51,36 +83,23 @@ pub struct SumDetail {
     pub code: usize,
 }
 
-#[derive(Debug)]
-pub struct TotalDetail {
-    pub kinds: HashMap<Language, Detail>,
-    pub sum: SumDetail,
-}
+pub fn aggregate_details(details: Vec<Detail>) -> (Vec<LanguageDetail>, SumDetail) {
+    let mut kinds = HashMap::new();
 
-impl TotalDetail {
-    pub fn from_details(details: Vec<Detail>) -> Self {
-        let mut total = Self {
-            kinds: HashMap::new(),
-            sum: SumDetail::default(),
-        };
+    let mut sum = SumDetail::default();
 
-        for detail in details {
-            total.add(detail);
-        }
-
-        total
-    }
-
-    fn add(&mut self, detail: Detail) {
+    for detail in details {
         let language = Language::from(detail.language);
-        self.sum.bytes += detail.bytes;
-        self.sum.blank += detail.blank;
-        self.sum.comment += detail.comment;
-        self.sum.code += detail.code;
+        sum.bytes += detail.bytes;
+        sum.blank += detail.blank;
+        sum.comment += detail.comment;
+        sum.code += detail.code;
 
-        *self
-            .kinds
+        kinds
             .entry(language)
-            .or_insert_with(|| Detail::from_other(&detail)) += detail;
+            .and_modify(|d: &mut LanguageDetail| d.add_detail(detail))
+            .or_insert(LanguageDetail::from_detail_by_default(detail));
     }
+
+    (kinds.values().cloned().collect(), sum)
 }

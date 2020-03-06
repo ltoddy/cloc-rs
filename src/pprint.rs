@@ -1,16 +1,20 @@
 use std::env::current_dir;
 use std::fs::OpenOptions;
+use std::io::Write;
 use std::time::Duration;
 
-use crate::detail::TotalDetail;
-use std::io::Write;
+use crate::detail::{LanguageDetail, SumDetail};
 
 pub struct PrettyPrinter {}
 
 impl PrettyPrinter {
-    pub fn terminal(total: TotalDetail, total_text_files: usize, ignored_files: usize, elapsed: Duration) {
-        let TotalDetail { kinds, sum } = total;
-
+    pub fn terminal(
+        languages: Vec<LanguageDetail>,
+        sum: SumDetail,
+        total_text_files: usize,
+        ignored_files: usize,
+        elapsed: Duration,
+    ) {
         println!();
         println!("{:>12} text files.", total_text_files);
         println!("{:>12} files ignored.", ignored_files);
@@ -24,10 +28,10 @@ impl PrettyPrinter {
         );
         println!("├────────────────────────────────────────────────────────────────┤");
 
-        for detail in kinds.values() {
+        for detail in languages {
             println!(
                 "| {:<14}{:>12}{:>12}{:>12}{:>12} |",
-                detail.language,
+                detail.language.as_str(),
                 bytes_to_size(detail.bytes as f64),
                 detail.code,
                 detail.comment,
@@ -48,8 +52,13 @@ impl PrettyPrinter {
     }
 
     // TODO
-    pub fn markdown(total: TotalDetail, total_text_files: usize, ignored_files: usize, elapsed: Duration) {
-        let TotalDetail { kinds, sum } = total;
+    pub fn markdown(
+        languages: Vec<LanguageDetail>,
+        sum: SumDetail,
+        total_text_files: usize,
+        ignored_files: usize,
+        elapsed: Duration,
+    ) {
         let mut filename = current_dir().unwrap();
         filename.push("total.md");
 
@@ -69,10 +78,10 @@ impl PrettyPrinter {
 
         template.push_str("| Language      |        Code |     Comment |       Blank |\n");
         template.push_str("----------------|-------------|-------------|--------------\n");
-        for detail in kinds.values() {
+        for detail in languages {
             template.push_str(&format!(
                 "| {:<13} | {:>11} | {:>11} | {:>11} |\n",
-                detail.language, detail.code, detail.comment, detail.blank
+                detail.language.as_str(), detail.code, detail.comment, detail.blank
             ));
         }
         template.push_str(&format!(
