@@ -81,7 +81,10 @@ impl PrettyPrinter {
         for detail in languages {
             template.push_str(&format!(
                 "| {:<13} | {:>11} | {:>11} | {:>11} |\n",
-                detail.language.as_str(), detail.code, detail.comment, detail.blank
+                detail.language.as_str(),
+                detail.code,
+                detail.comment,
+                detail.blank
             ));
         }
         template.push_str(&format!(

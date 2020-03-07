@@ -104,7 +104,7 @@ fn explore(dir: PathBuf, sender: &SyncSender<PathBuf>) {
     }
 }
 
-fn is_text_file<P: AsRef<Path>>(path: P) -> bool {
+fn is_normal_text_file<P: AsRef<Path>>(path: P) -> bool {
     // TODO
     // check:
     // 1. permission (can access)
@@ -127,7 +127,7 @@ fn calculate(path: PathBuf, info: Info) -> ClocResult<Detail> {
         name, single, multi, ..
     } = info;
 
-    if !is_text_file(&path) {
+    if !is_normal_text_file(&path) {
         return Err(ClocError::NonTextFile);
     }
 

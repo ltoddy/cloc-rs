@@ -24,7 +24,7 @@ impl Worker {
                 .lock()
                 .expect("Poisoned thread")
                 .recv()
-                .expect("channel has shut down.");
+                .expect("ThreadPoolExecutor sender has disconnected");
 
             match message {
                 Message::Job(job) => job(),
@@ -73,7 +73,9 @@ impl ThreadPoolExecutor {
     {
         let job = Message::Job(Box::new(f));
 
-        self.sender.send(job).unwrap();
+        self.sender
+            .send(job)
+            .expect("ThreadPoolExecutor receiver has disconnected");
     }
 }
 
@@ -86,12 +88,14 @@ impl Default for ThreadPoolExecutor {
 impl Drop for ThreadPoolExecutor {
     fn drop(&mut self) {
         for _ in 0..self.workers.len() {
-            self.sender.send(Message::Terminate).unwrap();
+            self.sender
+                .send(Message::Terminate)
+                .expect("ThreadPoolExecutor receiver has disconnected");
         }
 
         for worker in &mut self.workers {
             if let Some(thread) = worker.thread.take() {
-                thread.join().unwrap();
+                thread.join().expect("thread::spawn failed");
             }
         }
     }
