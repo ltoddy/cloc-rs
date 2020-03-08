@@ -6,7 +6,8 @@ pub mod executor;
 pub mod options;
 pub mod pprint;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+// TODO: consider removing this enum, instead of use &'static str.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd)]
 pub enum Language {
     C,
     CHeader,
