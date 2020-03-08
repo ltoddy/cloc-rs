@@ -21,3 +21,9 @@ include = [
 [dependencies]
 structopt = "0.3"
 num_cpus = "1.0"
+
+[profile.release]
+opt-level = 'z'
+lto = true
+panic = 'abort'
+codegen-units = 1

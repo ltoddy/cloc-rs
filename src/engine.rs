@@ -15,7 +15,7 @@ use crate::ClocResult;
 pub struct Engine {
     config: Config,
     entry: PathBuf,
-    total_text_files: AtomicUsize,
+    total_files: AtomicUsize,
     ignored_files: AtomicUsize,
 }
 
@@ -24,7 +24,7 @@ impl Engine {
         Self {
             config: Config::default(),
             entry,
-            total_text_files: AtomicUsize::new(0),
+            total_files: AtomicUsize::new(0),
             ignored_files: AtomicUsize::new(0),
         }
     }
@@ -34,12 +34,12 @@ impl Engine {
         let Engine {
             config,
             entry,
-            total_text_files,
+            total_files,
             ignored_files,
         } = self;
 
         let config = Arc::new(RwLock::new(config));
-        let total_text_files = Arc::new(total_text_files);
+        let total_files = Arc::new(total_files);
         let ignored_files = Arc::new(ignored_files);
         let (sender, receiver) = sync_channel(1024);
         let receiver = Arc::new(Mutex::new(receiver));
@@ -50,13 +50,13 @@ impl Engine {
         for _ in 0..(executor.capacity() - 1) {
             let receiver = Arc::clone(&receiver);
             let config = Arc::clone(&config);
-            let total_text_files = Arc::clone(&total_text_files);
+            let total_files = Arc::clone(&total_files);
             let ignored_files = Arc::clone(&ignored_files);
             let details = Arc::clone(&details);
 
             executor.submit(move || {
                 for path in receiver.lock().unwrap().recv() {
-                    total_text_files.fetch_add(1, Ordering::SeqCst);
+                    total_files.fetch_add(1, Ordering::SeqCst);
 
                     let info = match config.read().unwrap().get_by_extension(path.extension()) {
                         Some(info) => info.clone(),
@@ -66,10 +66,14 @@ impl Engine {
                         }
                     };
 
-                    if let Ok(detail) = calculate(path, info) {
-                        details.lock().unwrap().push(detail);
-                    } else {
-                        ignored_files.fetch_add(1, Ordering::SeqCst);
+                    match calculate(path, info) {
+                        Ok(detail) => details.lock().unwrap().push(detail),
+                        Err(e) => match e {
+                            ClocError::NonTextFile => {
+                                ignored_files.fetch_add(1, Ordering::SeqCst);
+                            }
+                            _ => {}
+                        },
                     }
                 }
             });
@@ -78,7 +82,7 @@ impl Engine {
 
         (
             Arc::try_unwrap(details).unwrap().into_inner().unwrap(),
-            Arc::try_unwrap(total_text_files).unwrap().into_inner(),
+            Arc::try_unwrap(total_files).unwrap().into_inner(),
             Arc::try_unwrap(ignored_files).unwrap().into_inner(),
         )
     }

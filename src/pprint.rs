@@ -11,12 +11,12 @@ impl PrettyPrinter {
     pub fn terminal(
         languages: Vec<LanguageDetail>,
         sum: SumDetail,
-        total_text_files: usize,
+        total_files: usize,
         ignored_files: usize,
         elapsed: Duration,
     ) {
         println!();
-        println!("{:>12} text files.", total_text_files);
+        println!("{:>12} files.", total_files);
         println!("{:>12} files ignored.", ignored_files);
         println!();
 
@@ -55,7 +55,7 @@ impl PrettyPrinter {
     pub fn markdown(
         languages: Vec<LanguageDetail>,
         sum: SumDetail,
-        total_text_files: usize,
+        total_files: usize,
         ignored_files: usize,
         elapsed: Duration,
     ) {
@@ -70,8 +70,8 @@ impl PrettyPrinter {
             .open(filename)
             .unwrap();
         let mut template = format!(
-            "{} text files.\n\n{} files ignored.\n\n{:.4} secs\n\n",
-            total_text_files,
+            "{} files.\n\n{} files ignored.\n\n{:.4} secs\n\n",
+            total_files,
             ignored_files,
             elapsed.as_secs_f64()
         );
