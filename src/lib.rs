@@ -5,6 +5,7 @@ pub mod error;
 pub mod executor;
 pub mod options;
 pub mod pprint;
+pub mod util;
 
 // TODO: consider removing this enum, instead of use &'static str.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd)]

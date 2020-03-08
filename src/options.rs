@@ -24,15 +24,6 @@ impl FromStr for Output {
     }
 }
 
-impl ToString for Output {
-    fn to_string(&self) -> String {
-        match self {
-            Output::Terminal => String::from("Terminal"),
-            Output::Markdown => String::from("Markdown"),
-        }
-    }
-}
-
 #[derive(Debug)]
 pub enum SortBy {
     Name,
@@ -54,18 +45,6 @@ impl FromStr for SortBy {
             "comment" => Ok(SortBy::Comment),
             "code" => Ok(SortBy::Code),
             _ => Err(ClocError::InvalidCommandArgs),
-        }
-    }
-}
-
-impl ToString for SortBy {
-    fn to_string(&self) -> String {
-        match self {
-            SortBy::Name => String::from("Name"),
-            SortBy::Size => String::from("Size"),
-            SortBy::Blank => String::from("Blank"),
-            SortBy::Comment => String::from("Comment"),
-            SortBy::Code => String::from("Code"),
         }
     }
 }

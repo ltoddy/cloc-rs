@@ -6,7 +6,6 @@ use crate::Language;
 
 #[derive(Debug, Clone)]
 pub struct Info {
-    // TODO: remove?
     pub name: Language,
     pub file_ext: Vec<&'static str>,
     pub single: Vec<&'static str>,

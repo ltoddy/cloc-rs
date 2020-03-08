@@ -1,4 +1,3 @@
-use std::cmp::Ordering;
 use std::time;
 
 use structopt::StructOpt;
@@ -7,6 +6,7 @@ use cloc::detail::aggregate_details;
 use cloc::engine::Engine;
 use cloc::options::{Options, Output, SortBy};
 use cloc::pprint::PrettyPrinter;
+use cloc::util::compare;
 
 fn main() {
     let opt: Options = Options::from_args();
@@ -29,16 +29,5 @@ fn main() {
     match output {
         Output::Terminal => PrettyPrinter::terminal(languages, sum, total_files, ignored_files, elapsed),
         Output::Markdown => PrettyPrinter::markdown(languages, sum, total_files, ignored_files, elapsed),
-    }
-}
-
-// TODO: move to order file
-fn compare<T: PartialOrd>(t1: T, t2: T) -> Ordering {
-    if t1 < t2 {
-        Ordering::Less
-    } else if t1 > t2 {
-        Ordering::Greater
-    } else {
-        Ordering::Equal
     }
 }
