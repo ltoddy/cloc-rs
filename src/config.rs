@@ -24,6 +24,12 @@ macro_rules! language {
             },
         )
     };
+    ($name: expr, $ext: expr, $single: expr) => {
+        language!($name, $ext, $single, vec![])
+    };
+    ($name: expr, $ext: expr) => {
+        language!($name, $ext, vec![], vec![])
+    };
 }
 
 #[derive(Debug)]
@@ -43,18 +49,18 @@ impl Default for Config {
                 language!(CppHeader, vec!["hpp"], vec!["//"], vec![("/*", "*/")]),
                 language!(Css, vec!["css", "sass", "less", "scss"], vec!["//"], vec![("/*", "*/")]),
                 language!(Go, vec!["go"], vec!["//"], vec![("/*", "*/"), ("/**", "*/")]),
-                language!(Html, vec!["html", "xhtml", "hml"], vec![], vec![]),
+                language!(Html, vec!["html", "xhtml", "hml"]),
                 language!(Haskell, vec!["hs"], vec!["--"], vec![("{-", "-}")]),
                 language!(JavaScript, vec!["js", "ejs"], vec!["//"], vec![("/*", "*/")]),
-                language!(Json, vec!["json"], vec![], vec![]),
+                language!(Json, vec!["json"]),
                 language!(Julia, vec!["jl"], vec!["#"], vec![("#=", "=#")]),
                 language!(Java, vec!["java"], vec!["//"], vec![("/*", "*/")]),
-                language!(Markdown, vec!["md"], vec![], vec![]),
+                language!(Markdown, vec!["md"]),
                 language!(Python, vec!["py"], vec!["#"], vec![("'''", "'''"), (r#"""#, r#"""#)]),
                 language!(Rust, vec!["rs"], vec!["//", "///", "///!"], vec![("/*", "*/")]),
                 language!(Ruby, vec!["rb"], vec!["#"], vec![("=", "=")]),
                 language!(Scala, vec!["scala"], vec!["//"], vec![("/*", "*/")]),
-                language!(Shell, vec!["sh"], vec!["#"], vec![]),
+                language!(Shell, vec!["sh"], vec!["#"]),
                 language!(TypeScript, vec!["ts"], vec!["//"], vec![("/*", "*/")]),
             ]),
         }
