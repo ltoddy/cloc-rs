@@ -55,10 +55,18 @@ impl Engine {
             let details = Arc::clone(&details);
 
             executor.submit(move || {
-                for path in receiver.lock().unwrap().recv() {
+                for path in receiver
+                    .lock()
+                    .expect("another user of this mutex panicked while holding the mutex")
+                    .recv()
+                {
                     total_files.fetch_add(1, Ordering::SeqCst);
 
-                    let info = match config.read().unwrap().get_by_extension(path.extension()) {
+                    let info = match config
+                        .read()
+                        .expect("the RwLock is poisoned")
+                        .get_by_extension(path.extension())
+                    {
                         Some(info) => info.clone(),
                         None => {
                             ignored_files.fetch_add(1, Ordering::SeqCst);
@@ -67,7 +75,10 @@ impl Engine {
                     };
 
                     match calculate(path, info) {
-                        Ok(detail) => details.lock().unwrap().push(detail),
+                        Ok(detail) => details
+                            .lock()
+                            .expect("another user of this mutex panicked while holding the mutex")
+                            .push(detail),
                         Err(e) => match e {
                             ClocError::NonTextFile => {
                                 ignored_files.fetch_add(1, Ordering::SeqCst);
