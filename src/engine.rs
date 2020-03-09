@@ -1,6 +1,6 @@
 use std::fs;
 use std::mem;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::mpsc::{sync_channel, SyncSender};
 use std::sync::{Arc, Mutex, RwLock};
@@ -119,32 +119,10 @@ fn explore(dir: PathBuf, sender: &SyncSender<PathBuf>) {
     }
 }
 
-fn is_normal_text_file<P: AsRef<Path>>(path: P) -> bool {
-    // TODO
-    // check:
-    // 1. permission (can access)
-    // 2. ascii text
-    // 3. symlink
-    let path = path.as_ref();
-    if let Ok(metadata) = path.metadata() {
-        let file_type = metadata.file_type();
-
-        if file_type.is_symlink() {
-            return false;
-        }
-    }
-
-    true
-}
-
 fn calculate(path: PathBuf, info: Info) -> ClocResult<Detail> {
     let Info {
         name, single, multi, ..
     } = info;
-
-    if !is_normal_text_file(&path) {
-        return Err(ClocError::NonTextFile);
-    }
 
     let content = fs::read_to_string(&path)?;
     let metadata = path.metadata()?;
