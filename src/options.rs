@@ -26,7 +26,8 @@ impl FromStr for Output {
 
 #[derive(Debug)]
 pub enum SortBy {
-    Name,
+    Language,
+    Files,
     Size,
     Blank,
     Comment,
@@ -39,7 +40,8 @@ impl FromStr for SortBy {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let s = s.to_lowercase();
         match s.as_str() {
-            "name" => Ok(SortBy::Name),
+            "language" => Ok(SortBy::Language),
+            "files" => Ok(SortBy::Files),
             "size" => Ok(SortBy::Size),
             "blank" => Ok(SortBy::Blank),
             "comment" => Ok(SortBy::Comment),
@@ -65,8 +67,8 @@ pub struct Options {
 
     #[structopt(
         long = "sort-by",
-        default_value = "name",
-        help = "alternative parameters(ignore case): name, size, blank, comment, code"
+        default_value = "language",
+        help = "alternative parameters(ignore case): language, files, size, blank, comment, code"
     )]
     pub sort_by: SortBy,
 

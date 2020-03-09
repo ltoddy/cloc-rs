@@ -18,7 +18,8 @@ fn main() {
     let (mut languages, sum) = aggregate_details(&details);
 
     languages.sort_by(|prev, next| match sort_by {
-        SortBy::Name => compare(prev.language, next.language),
+        SortBy::Language => compare(prev.language, next.language),
+        SortBy::Files => compare(prev.files, next.files),
         SortBy::Size => compare(prev.bytes, next.bytes),
         SortBy::Blank => compare(prev.blank, next.blank),
         SortBy::Comment => compare(prev.comment, next.comment),

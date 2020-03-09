@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::ops::AddAssign;
 
 /// 读取单个文件, 分析后得出的详情
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -22,61 +21,42 @@ impl Detail {
             code,
         }
     }
-
-    // TODO: rename
-    pub fn from_other(other: &Detail) -> Self {
-        Self {
-            language: other.language,
-            bytes: 0,
-            blank: 0,
-            comment: 0,
-            code: 0,
-        }
-    }
-}
-
-impl AddAssign for Detail {
-    fn add_assign(&mut self, rhs: Self) {
-        self.bytes += rhs.bytes;
-        self.blank += rhs.blank;
-        self.comment += rhs.comment;
-        self.code += rhs.code;
-    }
 }
 
 /// 基于语言分类之后的详情
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct LanguageDetail {
     pub language: &'static str,
+    pub files: usize,
     pub bytes: u64,
-    pub code: usize,
-    pub comment: usize,
     pub blank: usize,
+    pub comment: usize,
+    pub code: usize,
 }
 
 impl LanguageDetail {
-    fn from_detail_by_default(detail: Detail) -> Self {
+    fn from_details(language: &'static str, details: &[Detail]) -> Self {
+        let (bytes, blank, comment, code) = details
+            .iter()
+            .map(|detail| (detail.bytes, detail.blank, detail.comment, detail.code))
+            .fold((0, 0, 0, 0), |acc, x| {
+                (acc.0 + x.0, acc.1 + x.1, acc.2 + x.2, acc.3 + x.3)
+            });
+
         Self {
-            language: detail.language,
-            bytes: detail.bytes,
-            code: detail.code,
-            comment: detail.comment,
-            blank: detail.blank,
+            language,
+            files: details.len(),
+            bytes,
+            blank,
+            comment,
+            code,
         }
-    }
-
-    fn add_detail(&mut self, detail: Detail) {
-        assert_eq!(self.language, detail.language);
-
-        self.bytes += detail.bytes;
-        self.code += detail.code;
-        self.comment += detail.comment;
-        self.blank += detail.blank;
     }
 }
 
 #[derive(Debug, Default)]
 pub struct SumDetail {
+    pub files: usize,
     pub bytes: u64,
     pub blank: usize,
     pub comment: usize,
@@ -84,8 +64,7 @@ pub struct SumDetail {
 }
 
 pub fn aggregate_details(details: &[Detail]) -> (Vec<LanguageDetail>, SumDetail) {
-    let mut kinds = HashMap::new();
-
+    let mut kinds = HashMap::<&str, Vec<Detail>>::new();
     let mut sum = SumDetail::default();
 
     for detail in details {
@@ -96,6 +75,7 @@ pub fn aggregate_details(details: &[Detail]) -> (Vec<LanguageDetail>, SumDetail)
             comment,
             code,
         } = detail;
+        sum.files += 1;
         sum.bytes += bytes;
         sum.blank += blank;
         sum.comment += comment;
@@ -103,9 +83,15 @@ pub fn aggregate_details(details: &[Detail]) -> (Vec<LanguageDetail>, SumDetail)
 
         kinds
             .entry(language)
-            .and_modify(|d: &mut LanguageDetail| d.add_detail(*detail))
-            .or_insert_with(|| LanguageDetail::from_detail_by_default(*detail));
+            .and_modify(|ds| ds.push(*detail))
+            .or_insert_with(|| vec![*detail]);
     }
 
-    (kinds.values().cloned().collect(), sum)
+    (
+        kinds
+            .iter()
+            .map(|(language, details)| LanguageDetail::from_details(language, details))
+            .collect(),
+        sum,
+    )
 }

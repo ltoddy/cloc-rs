@@ -10,34 +10,36 @@ pub struct PrettyPrinter {}
 impl PrettyPrinter {
     pub fn terminal(languages: Vec<LanguageDetail>, sum: SumDetail, elapsed: Duration) {
         println!("{:>12.4} secs", elapsed.as_secs_f64());
-        println!("┌────────────────────────────────────────────────────────────────┐");
+        println!("┌────────────────────────────────────────────────────────────────────────┐");
         println!(
-            "| {:<14}{:>12}{:>12}{:>12}{:>12} |",
-            "Language", "Size", "Code", "Comment", "Blank"
+            "| {:<10}{:>12}{:>12}{:>12}{:>12}{:>12} |",
+            "Language", "files", "Size", "Blank", "Comment", "Code",
         );
-        println!("├────────────────────────────────────────────────────────────────┤");
+        println!("├────────────────────────────────────────────────────────────────────────┤");
 
         for detail in languages {
             println!(
-                "| {:<14}{:>12}{:>12}{:>12}{:>12} |",
+                "| {:<10}{:>12}{:>12}{:>12}{:>12}{:>12} |",
                 detail.language,
+                detail.files,
                 bytes_to_size(detail.bytes as f64),
-                detail.code,
-                detail.comment,
                 detail.blank,
+                detail.comment,
+                detail.code,
             );
         }
 
-        println!("├────────────────────────────────────────────────────────────────┤");
+        println!("├────────────────────────────────────────────────────────────────────────┤");
         println!(
-            "| {:<14}{:>12}{:>12}{:>12}{:>12} |",
+            "| {:<10}{:>12}{:>12}{:>12}{:>12}{:>12} |",
             "Sum",
+            sum.files,
             bytes_to_size(sum.bytes as f64),
-            sum.code,
+            sum.blank,
             sum.comment,
-            sum.blank
+            sum.code,
         );
-        println!("└────────────────────────────────────────────────────────────────┘");
+        println!("└────────────────────────────────────────────────────────────────────────┘");
     }
 
     // TODO
