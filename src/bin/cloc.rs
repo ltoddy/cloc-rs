@@ -15,7 +15,7 @@ fn main() {
     let engine = Engine::new(entry);
     let now = time::Instant::now();
     let (details, total_files, ignored_files) = engine.calculate();
-    let (mut languages, sum) = aggregate_details(details);
+    let (mut languages, sum) = aggregate_details(&details);
 
     languages.sort_by(|prev, next| match sort_by {
         SortBy::Name => compare(prev.language, next.language),
