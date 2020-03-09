@@ -104,7 +104,7 @@ pub fn aggregate_details(details: &[Detail]) -> (Vec<LanguageDetail>, SumDetail)
         kinds
             .entry(language)
             .and_modify(|d: &mut LanguageDetail| d.add_detail(*detail))
-            .or_insert(LanguageDetail::from_detail_by_default(*detail));
+            .or_insert_with(|| LanguageDetail::from_detail_by_default(*detail));
     }
 
     (kinds.values().cloned().collect(), sum)

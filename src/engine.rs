@@ -1,13 +1,11 @@
 use std::fs;
 use std::mem;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::mpsc::{sync_channel, SyncSender};
 use std::sync::{Arc, Mutex, RwLock};
 
 use crate::config::{Config, Info};
 use crate::detail::Detail;
-use crate::error::ClocError;
 use crate::executor::ThreadPoolExecutor;
 use crate::ClocResult;
 
@@ -15,8 +13,12 @@ use crate::ClocResult;
 pub struct Engine {
     config: Config,
     entry: PathBuf,
-    total_files: AtomicUsize,
-    ignored_files: AtomicUsize,
+}
+
+// TODO: rename
+enum Message {
+    Content(PathBuf),
+    End,
 }
 
 impl Engine {
@@ -24,85 +26,66 @@ impl Engine {
         Self {
             config: Config::default(),
             entry,
-            total_files: AtomicUsize::new(0),
-            ignored_files: AtomicUsize::new(0),
         }
     }
 
-    pub fn calculate(self) -> (Vec<Detail>, usize, usize) {
+    pub fn calculate(self) -> Vec<Detail> {
         let executor = ThreadPoolExecutor::new();
-        let Engine {
-            config,
-            entry,
-            total_files,
-            ignored_files,
-        } = self;
+        let Engine { config, entry } = self;
 
         let config = Arc::new(RwLock::new(config));
-        let total_files = Arc::new(total_files);
-        let ignored_files = Arc::new(ignored_files);
-        let (sender, receiver) = sync_channel(1024);
+        let (sender, receiver) = sync_channel::<Message>(1024);
         let receiver = Arc::new(Mutex::new(receiver));
 
-        executor.submit(move || explore(entry, &sender));
-
         let details = Arc::new(Mutex::new(Vec::new()));
-        for _ in 0..(executor.capacity() - 1) {
+        for _ in 0..executor.capacity() {
             let receiver = Arc::clone(&receiver);
             let config = Arc::clone(&config);
-            let total_files = Arc::clone(&total_files);
-            let ignored_files = Arc::clone(&ignored_files);
             let details = Arc::clone(&details);
 
             executor.submit(move || {
-                for path in receiver
+                while let Ok(message) = receiver
                     .lock()
                     .expect("another user of this mutex panicked while holding the mutex")
                     .recv()
                 {
-                    total_files.fetch_add(1, Ordering::SeqCst);
+                    match message {
+                        Message::End => return,
+                        Message::Content(path) => {
+                            let info = match config
+                                .read()
+                                .expect("the RwLock is poisoned")
+                                .get_by_extension(path.extension())
+                            {
+                                Some(info) => info.clone(),
+                                None => continue,
+                            };
 
-                    let info = match config
-                        .read()
-                        .expect("the RwLock is poisoned")
-                        .get_by_extension(path.extension())
-                    {
-                        Some(info) => info.clone(),
-                        None => {
-                            ignored_files.fetch_add(1, Ordering::SeqCst);
-                            continue;
-                        }
-                    };
-
-                    match calculate(path, info) {
-                        Ok(detail) => details
-                            .lock()
-                            .expect("another user of this mutex panicked while holding the mutex")
-                            .push(detail),
-                        Err(e) => match e {
-                            ClocError::NonTextFile => {
-                                ignored_files.fetch_add(1, Ordering::SeqCst);
+                            if let Ok(detail) = calculate(path, info) {
+                                details
+                                    .lock()
+                                    .expect("another user of this mutex panicked while holding the mutex")
+                                    .push(detail);
                             }
-                            _ => {}
-                        },
+                        }
                     }
                 }
             });
         }
+        explore(entry, &sender);
+        for _ in 0..executor.capacity() {
+            sender.send(Message::End).unwrap();
+        }
         mem::drop(executor);
 
-        (
-            Arc::try_unwrap(details).unwrap().into_inner().unwrap(),
-            Arc::try_unwrap(total_files).unwrap().into_inner(),
-            Arc::try_unwrap(ignored_files).unwrap().into_inner(),
-        )
+        Arc::try_unwrap(details).unwrap().into_inner().unwrap()
     }
 }
 
-fn explore(dir: PathBuf, sender: &SyncSender<PathBuf>) {
+fn explore(dir: PathBuf, sender: &SyncSender<Message>) {
     // TODO: refactor
     if dir.is_file() {
-        sender.send(dir).unwrap();
+        sender.send(Message::Content(dir)).unwrap();
     } else if dir.is_dir() {
         let entries = fs::read_dir(dir).unwrap();
         for entry in entries {
@@ -111,7 +94,7 @@ fn explore(dir: PathBuf, sender: &SyncSender<PathBuf>) {
             let path = entry.path();
             if path.is_file() {
                 // TODO: remove unwrap
-                sender.send(path).unwrap();
+                sender.send(Message::Content(path)).unwrap();
             } else if path.is_dir() {
                 explore(path, sender);
             }
