@@ -6,6 +6,7 @@ use cloc::detail::aggregate_details;
 use cloc::engine::Engine;
 use cloc::options::{Options, Output, SortBy};
 use cloc::pprint::PrettyPrinter;
+use cloc::spinner::Spinner;
 use cloc::util::compare;
 
 fn main() {
@@ -17,8 +18,10 @@ fn main() {
         entry,
     } = opt;
 
+    let spinner = Spinner::new();
     let engine = Engine::new(entry);
     let now = time::Instant::now();
+    spinner.start();
     let details = engine.calculate();
     let (mut languages, sum) = aggregate_details(&details);
 
@@ -31,6 +34,7 @@ fn main() {
         SortBy::Code => compare(prev.code, next.code, order_by),
     });
     let elapsed = now.elapsed();
+    spinner.stop();
 
     match output {
         Output::Terminal => PrettyPrinter::terminal(languages, sum, elapsed),

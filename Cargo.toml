@@ -1,6 +1,6 @@
 [package]
 name = "cloc"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["ltoddy <taoliu0509@gmail.com>"]
 edition = "2018"
 license = "MIT"
