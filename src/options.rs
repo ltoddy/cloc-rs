@@ -51,6 +51,25 @@ impl FromStr for SortBy {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum OrderBy {
+    Asc,
+    Desc,
+}
+
+impl FromStr for OrderBy {
+    type Err = ClocError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let s = s.to_lowercase();
+        match s.as_str() {
+            "asc" => Ok(OrderBy::Asc),
+            "desc" => Ok(OrderBy::Desc),
+            _ => Err(ClocError::InvalidCommandArgs),
+        }
+    }
+}
+
 #[derive(StructOpt, Debug)]
 #[structopt(
     name = "cloc - Count, or compute differences of, lines of source code and comments.",
@@ -58,19 +77,21 @@ impl FromStr for SortBy {
 )]
 pub struct Options {
     #[structopt(
-        short = "o",
         long = "output",
         default_value = "Terminal",
-        help = "alternative parameters(ignore case): Terminal, Markdown"
+        help = "alternative parameters: Terminal, Markdown"
     )]
     pub output: Output,
 
     #[structopt(
         long = "sort-by",
         default_value = "language",
-        help = "alternative parameters(ignore case): language, files, size, blank, comment, code"
+        help = "alternative parameters: language, files, size, blank, comment, code"
     )]
     pub sort_by: SortBy,
+
+    #[structopt(long = "order-by", default_value = "asc", help = "alternative parameters: asc, desc")]
+    pub order_by: OrderBy,
 
     #[structopt(name = "path", parse(from_os_str))]
     pub entry: PathBuf,

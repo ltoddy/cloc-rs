@@ -44,7 +44,7 @@ impl PrettyPrinter {
 
     // TODO
     pub fn markdown(languages: Vec<LanguageDetail>, sum: SumDetail, elapsed: Duration) {
-        let mut filename = current_dir().unwrap();
+        let mut filename = current_dir().expect("current working directory value is invalid");
         filename.push("total.md");
 
         let mut file = OpenOptions::new()
@@ -92,6 +92,9 @@ impl PrettyPrinter {
 
         file.write_all(template.as_bytes()).unwrap();
     }
+
+    // TODO
+    pub fn html(_languages: Vec<LanguageDetail>, _sum: SumDetail, _elapsed: Duration) {}
 }
 
 const SIZES: [&str; 9] = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
@@ -103,4 +106,16 @@ fn bytes_to_size(bytes: f64) -> String {
     }
     let i = (bytes.ln() / k.ln()) as i32;
     format!("{:.2} {}", bytes / k.powi(i), SIZES[i as usize])
+}
+
+#[cfg(test)]
+pub mod tests {
+    use super::*;
+
+    #[test]
+    pub fn test_bytes_to_size() {
+        let one_kb = 1024f64;
+
+        assert_eq!(bytes_to_size(one_kb), "1.00 KB")
+    }
 }
