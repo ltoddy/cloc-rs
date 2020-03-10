@@ -2,48 +2,54 @@
 
 Count, or compute differences of, lines of source code and comments.
 
-## 设计
+## Overview
 
 ```
-                                    --> Calculate -\
-walk directory --> channel<PathBuf> --> Calculate -> Sum
-                                    --> Calculate -/
+                                    --> calculate -\
+walk directory --> channel<PathBuf> --> calculate -> Sum
+                                    --> calculate -/
 ```
 
-主线程与线程池, 主线程去递归的读取目录下的文件路径, 然后将路径发送到管道里面,
-线程池中的每个线程去接收管道的发送来的路径, 然后去读取路径文件中的内容, 按照
-计算规则去计算, 最后将计算结果进行聚合.
-
-### 使用
+### Usage
 
 e.g.
 
 ```
-$ cargo run -- src/
-      0.0066 secs
+ltoddy@linuxbox:~/.cargo/registry/src$ cloc github.com-1ecc6299db9ec823 --sort-by=code
+      0.5971 secs
 ┌────────────────────────────────────────────────────────────────────────┐
 | Language         files        Size       Blank     Comment        Code |
 ├────────────────────────────────────────────────────────────────────────┤
-| Rust                10    19.91 KB          91          17         594 |
+| Html                 3    622.00 B           1           0          19 |
+| CSS                  3     1.56 KB          15           6          54 |
+| Ruby                 1     1.41 KB           8           2          68 |
+| Python              21   120.17 KB         556        2031        1049 |
+| Cpp                  9    79.25 KB         190          42        1830 |
+| Shell               96   289.45 KB        1169        1728        7523 |
+| Json               222   410.30 KB           0           0       17563 |
+| CHeader            242  1018.47 KB        3655        8764       20101 |
+| Markdown           381     1.59 MB       11747           0       30570 |
+| C                  257     2.46 MB       11613        8589       70725 |
+| Rust              4861    59.06 MB      128216      245762     1476442 |
 ├────────────────────────────────────────────────────────────────────────┤
-| Sum                 10    19.91 KB          91          17         594 |
+| Sum               6096    64.99 MB      157170      266924     1625944 |
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 安装
+### Install
 
 ```
 $ cargo install cloc
 ```
 
-或者本地安装
+or
 
 ```
 $ git clone https://github.com/ltoddy/cloc-rs.git
 $ cargo install --path cloc-rs
 ```
 
-### 如何贡献(更多语言支持)
+### How to contribute(support for more language)
 
 - 在`src/config.rs`文件中, `Config`结构体的`default`方法中, 使用`language!`宏来定义规则.
 
@@ -62,11 +68,12 @@ $ cargo install --path cloc-rs
 - [x] 每种语言分类统计的文件总大小和文件数量
 - [x] 添加统计详情的总时间
 - [x] 统计结果可以按照顺序排列(sort_by: language name, code, comment ..., 由参数--sort-by指定
-- [ ] 统计结果可以生成Markdown, Html文件(由参数--output=(Markdown)|(Html) 指定)
+- [ ] 统计结果可以生成Markdown, Html文件(由参数--output=(markdown)|(html) 指定)
 - [ ] 优化代码最终统计详情的聚合方式
 - [ ] 去除代码中使用的`unwrap()`
 - [ ] 添加日志(由--trace参数指定是否打开)
 - [ ] 优化代码实现
 - [ ] 去除代码中的expect, 更细粒度的错误处理
+- [ ] 美化输出
 - [ ] 完善文档
 - [ ] ...

@@ -56,17 +56,38 @@ impl PrettyPrinter {
             .unwrap();
         let mut template = format!("{:.4} secs\n\n", elapsed.as_secs_f64());
 
-        template.push_str("| Language      |        Code |     Comment |       Blank |\n");
-        template.push_str("----------------|-------------|-------------|--------------\n");
+        template.push_str(&format!(
+            "| {:<10} | {:>12} | {:>12} | {:>12} | {:>12} | {:>12} |\n",
+            "Language", "files", "Size", "Blank", "Comment", "Code",
+        ));
+        template.push_str(&format!(
+            "|-{}-|-{}-|-{}-|-{}-|-{}-|-{}-|\n",
+            "-".repeat(10),
+            "-".repeat(12),
+            "-".repeat(12),
+            "-".repeat(12),
+            "-".repeat(12),
+            "-".repeat(12),
+        ));
         for detail in languages {
             template.push_str(&format!(
-                "| {:<13} | {:>11} | {:>11} | {:>11} |\n",
-                detail.language, detail.code, detail.comment, detail.blank
+                "| {:<10} | {:>12} | {:>12} | {:>12} | {:>12} | {:>12} |\n",
+                detail.language,
+                detail.files,
+                bytes_to_size(detail.bytes as f64),
+                detail.blank,
+                detail.comment,
+                detail.code
             ));
         }
         template.push_str(&format!(
-            "| {:<13} | {:>11} | {:>11} | {:>11} |\n",
-            "Sum", sum.code, sum.comment, sum.blank
+            "| {:<10} | {:>12} | {:>12} | {:>12} | {:>12} | {:>12} |\n",
+            "Sum",
+            sum.files,
+            bytes_to_size(sum.bytes as f64),
+            sum.blank,
+            sum.comment,
+            sum.code
         ));
 
         file.write_all(template.as_bytes()).unwrap();
