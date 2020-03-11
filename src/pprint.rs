@@ -13,7 +13,7 @@ impl PrettyPrinter {
         println!("┌────────────────────────────────────────────────────────────────────────┐");
         println!(
             "| {:<10}{:>12}{:>12}{:>12}{:>12}{:>12} |",
-            "Language", "files", "Size", "Blank", "Comment", "Code",
+            "Language", "files", "size", "blank", "comment", "code",
         );
         println!("├────────────────────────────────────────────────────────────────────────┤");
 
@@ -45,7 +45,7 @@ impl PrettyPrinter {
     // TODO
     pub fn markdown(languages: Vec<LanguageDetail>, sum: SumDetail, elapsed: Duration) {
         let mut filename = current_dir().expect("current working directory value is invalid");
-        filename.push("total.md");
+        filename.push("cloc-report.md");
 
         let mut file = OpenOptions::new()
             .create(true)
@@ -58,7 +58,7 @@ impl PrettyPrinter {
 
         template.push_str(&format!(
             "| {:<10} | {:>12} | {:>12} | {:>12} | {:>12} | {:>12} |\n",
-            "Language", "files", "Size", "Blank", "Comment", "Code",
+            "Language", "files", "size", "blank", "comment", "code",
         ));
         template.push_str(&format!(
             "|-{}-|-{}-|-{}-|-{}-|-{}-|-{}-|\n",

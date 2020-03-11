@@ -103,9 +103,7 @@ fn explore(dir: PathBuf, sender: &SyncSender<Message>) {
 }
 
 fn calculate(path: PathBuf, info: Info) -> ClocResult<Detail> {
-    let Info {
-        name, single, multi, ..
-    } = info;
+    let Info { language, single, multi, .. } = info;
 
     let content = fs::read_to_string(&path)?;
     let metadata = path.metadata()?;
@@ -135,7 +133,7 @@ fn calculate(path: PathBuf, info: Info) -> ClocResult<Detail> {
         // match multi line comments
         for (start, end) in &multi {
             if let Some(d) = in_comment {
-                if d != (start, end) {
+                if d != (*start, *end) {
                     continue;
                 }
             }
@@ -175,5 +173,5 @@ fn calculate(path: PathBuf, info: Info) -> ClocResult<Detail> {
         code += 1;
     }
 
-    Ok(Detail::new(name, bytes, blank, comment, code))
+    Ok(Detail::new(language, bytes, blank, comment, code))
 }

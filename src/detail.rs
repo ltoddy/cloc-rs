@@ -3,7 +3,6 @@ use std::collections::HashMap;
 /// 读取单个文件, 分析后得出的详情
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Detail {
-    // TODO: rename  language -> name
     pub language: &'static str,
     pub bytes: u64,
     pub blank: usize,
@@ -39,9 +38,7 @@ impl LanguageDetail {
         let (bytes, blank, comment, code) = details
             .iter()
             .map(|detail| (detail.bytes, detail.blank, detail.comment, detail.code))
-            .fold((0, 0, 0, 0), |acc, x| {
-                (acc.0 + x.0, acc.1 + x.1, acc.2 + x.2, acc.3 + x.3)
-            });
+            .fold((0, 0, 0, 0), |acc, x| (acc.0 + x.0, acc.1 + x.1, acc.2 + x.2, acc.3 + x.3));
 
         Self {
             language,
@@ -68,13 +65,7 @@ pub fn aggregate_details(details: &[Detail]) -> (Vec<LanguageDetail>, SumDetail)
     let mut sum = SumDetail::default();
 
     for detail in details {
-        let &Detail {
-            language,
-            bytes,
-            blank,
-            comment,
-            code,
-        } = detail;
+        let &Detail { language, bytes, blank, comment, code } = detail;
         sum.files += 1;
         sum.bytes += bytes;
         sum.blank += blank;
