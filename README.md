@@ -6,7 +6,7 @@ Count, or compute differences of, lines of source code and comments.
 
 ```
                                     --> calculate -\
-walk directory --> channel<PathBuf> --> calculate -> Sum
+walk directory --> channel<PathBuf> --> calculate --> sum
                                     --> calculate -/
 ```
 
@@ -64,15 +64,8 @@ $ cargo install --path cloc-rs
 
 ### TODO
 
-- [x] 添加更多语言的统计规则
-- [x] 每种语言分类统计的文件总大小和文件数量
-- [x] 添加统计详情的总时间
-- [x] 统计结果可以按照顺序排列(sort_by: language name, code, comment ..., 由参数--sort-by指定
 - [ ] 统计结果可以生成Markdown, Html文件(由参数--output=(markdown)|(html) 指定)
-- [ ] 优化代码最终统计详情的聚合方式
 - [ ] 去除代码中使用的`unwrap()`
-- [ ] 添加日志(由--trace参数指定是否打开)
-- [ ] 优化代码实现
 - [ ] 去除代码中的expect, 更细粒度的错误处理
 - [ ] 美化输出
 - [ ] 完善测试

@@ -4,6 +4,7 @@ use std::sync::{Arc, Condvar, Mutex};
 use std::thread::{sleep, spawn};
 use std::time::Duration;
 
+#[derive(Debug, Default)]
 pub struct Spinner {
     cvar: Arc<Condvar>,
     lock: Arc<Mutex<bool>>,
@@ -11,7 +12,6 @@ pub struct Spinner {
 
 impl Spinner {
     pub fn new() -> Self {
-        // TODO: consider remove Arc
         Self {
             cvar: Arc::new(Condvar::new()),
             lock: Arc::new(Mutex::new(false)),
@@ -20,7 +20,7 @@ impl Spinner {
 
     pub fn start(&self) {
         let Self { cvar, lock } = self;
-        let pair = Arc::new((lock.clone(), cvar.clone()));
+        let pair = (Arc::clone(&lock), Arc::clone(&cvar));
         spawn(move || {
             let mut out = stdout();
             for c in vec!['|', '/', '-', '\\'].iter().cycle() {
@@ -30,7 +30,7 @@ impl Spinner {
                 let _ = out.write_all("\x08".repeat(status.len()).as_bytes());
                 sleep(Duration::from_millis(50));
 
-                let (lock, cvar) = &*pair;
+                let (lock, cvar) = &pair;
 
                 if let Ok(mut started) = lock.lock() {
                     if let Ok(result) = cvar.wait_timeout(started, Duration::from_millis(100)) {

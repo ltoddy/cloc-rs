@@ -6,6 +6,7 @@ use std::sync::{Arc, Mutex, RwLock};
 
 use crate::config::{Config, Info};
 use crate::detail::Detail;
+use crate::detail::{aggregate_details, LanguageDetail, SumDetail};
 use crate::executor::ThreadPoolExecutor;
 use crate::ClocResult;
 
@@ -21,6 +22,7 @@ enum Message {
 }
 
 impl Engine {
+    #[inline]
     pub fn new(entry: PathBuf) -> Self {
         Self {
             config: Config::default(),
@@ -28,7 +30,7 @@ impl Engine {
         }
     }
 
-    pub fn calculate(self) -> Vec<Detail> {
+    pub fn calculate(self) -> (Vec<LanguageDetail>, SumDetail) {
         let executor = ThreadPoolExecutor::new();
         let Engine { config, entry } = self;
 
@@ -77,7 +79,7 @@ impl Engine {
         }
         mem::drop(executor);
 
-        Arc::try_unwrap(details).unwrap().into_inner().unwrap()
+        aggregate_details(Arc::try_unwrap(details).unwrap().into_inner().unwrap())
     }
 }
 

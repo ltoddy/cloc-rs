@@ -2,6 +2,7 @@ use std::cmp::Ordering;
 
 use crate::options::OrderBy;
 
+#[inline]
 pub fn compare<T: PartialOrd>(t1: T, t2: T, order_by: OrderBy) -> Ordering {
     let (t1, t2) = match order_by {
         OrderBy::Asc => (t1, t2),

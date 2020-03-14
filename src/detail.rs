@@ -1,16 +1,17 @@
 use std::collections::HashMap;
 
 /// 读取单个文件, 分析后得出的详情
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub struct Detail {
-    pub language: &'static str,
-    pub bytes: u64,
-    pub blank: usize,
-    pub comment: usize,
-    pub code: usize,
+#[derive(Copy, Clone, Debug)]
+pub(crate) struct Detail {
+    pub(crate) language: &'static str,
+    pub(crate) bytes: u64,
+    pub(crate) blank: usize,
+    pub(crate) comment: usize,
+    pub(crate) code: usize,
 }
 
 impl Detail {
+    #[inline]
     pub fn new(language: &'static str, bytes: u64, blank: usize, comment: usize, code: usize) -> Self {
         Self {
             language,
@@ -23,7 +24,7 @@ impl Detail {
 }
 
 /// 基于语言分类之后的详情
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Debug)]
 pub struct LanguageDetail {
     pub language: &'static str,
     pub files: usize,
@@ -51,7 +52,7 @@ impl LanguageDetail {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct SumDetail {
     pub files: usize,
     pub bytes: u64,
@@ -60,12 +61,25 @@ pub struct SumDetail {
     pub code: usize,
 }
 
-pub fn aggregate_details(details: &[Detail]) -> (Vec<LanguageDetail>, SumDetail) {
+impl SumDetail {
+    #[inline]
+    pub fn zero() -> Self {
+        Self {
+            files: 0,
+            bytes: 0,
+            blank: 0,
+            comment: 0,
+            code: 0,
+        }
+    }
+}
+
+pub(crate) fn aggregate_details(details: Vec<Detail>) -> (Vec<LanguageDetail>, SumDetail) {
     let mut kinds = HashMap::<&str, Vec<Detail>>::new();
-    let mut sum = SumDetail::default();
+    let mut sum = SumDetail::zero();
 
     for detail in details {
-        let &Detail { language, bytes, blank, comment, code } = detail;
+        let Detail { language, bytes, blank, comment, code } = detail;
         sum.files += 1;
         sum.bytes += bytes;
         sum.blank += blank;
@@ -74,8 +88,8 @@ pub fn aggregate_details(details: &[Detail]) -> (Vec<LanguageDetail>, SumDetail)
 
         kinds
             .entry(language)
-            .and_modify(|ds| ds.push(*detail))
-            .or_insert_with(|| vec![*detail]);
+            .and_modify(|ds| ds.push(detail))
+            .or_insert_with(|| vec![detail]);
     }
 
     (

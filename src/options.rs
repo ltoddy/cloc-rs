@@ -79,18 +79,22 @@ pub struct Options {
     #[structopt(
         long = "output",
         default_value = "Terminal",
-        help = "alternative parameters: Terminal, Markdown"
+        help = "alternative parameters: Terminal, Markdown\n"
     )]
     pub output: Output,
 
     #[structopt(
         long = "sort-by",
         default_value = "language",
-        help = "alternative parameters: language, files, size, blank, comment, code"
+        help = "alternative parameters: language, files, size, blank, comment, code\n"
     )]
     pub sort_by: SortBy,
 
-    #[structopt(long = "order-by", default_value = "asc", help = "alternative parameters: asc, desc")]
+    #[structopt(
+        long = "order-by",
+        default_value = "asc",
+        help = "alternative parameters: asc, desc\n"
+    )]
     pub order_by: OrderBy,
 
     #[structopt(name = "path", parse(from_os_str))]

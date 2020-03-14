@@ -2,19 +2,20 @@ use std::collections::HashMap;
 use std::ffi::OsStr;
 
 #[derive(Debug, Clone)]
-pub struct Info {
-    pub language: &'static str,
-    pub file_ext: Vec<&'static str>,
-    pub single: Vec<&'static str>,
-    pub multi: Vec<(&'static str, &'static str)>,
+pub(crate) struct Info {
+    pub(crate) language: &'static str,
+    pub(crate) file_ext: Vec<&'static str>,
+    pub(crate) single: Vec<&'static str>,
+    pub(crate) multi: Vec<(&'static str, &'static str)>,
 }
 
 #[derive(Debug)]
-pub struct Config {
-    pub languages: HashMap<&'static str, Info>,
+pub(crate) struct Config {
+    pub(crate) languages: HashMap<&'static str, Info>,
     ext_to_language: HashMap<&'static str, &'static str>,
 }
 
+#[allow(clippy::useless_vec)]
 impl Default for Config {
     fn default() -> Self {
         let mut languages = HashMap::new();
@@ -47,12 +48,7 @@ impl Default for Config {
         language!("CHeader", vec!["h"], vec!["//"], vec![("/*", "*/")]);
         language!("Cpp", vec!["cpp"], vec!["//"], vec![("/*", "*/")]);
         language!("CppHeader", vec!["hpp"], vec!["//"], vec![("/*", "*/")]);
-        language!(
-            "CSS",
-            vec!["css", "sass", "less", "scss"],
-            vec!["//"],
-            vec![("/*", "*/")]
-        );
+        language!("CSS", vec!["css", "sass", "less", "scss"], vec!["//"], vec![("/*", "*/")]);
         language!("Go", vec!["go"], vec!["//"], vec![("/*", "*/"), ("/**", "*/")]);
         language!("Html", vec!["html", "xhtml", "hml"]);
         language!("Haskell", vec!["hs"], vec!["--"], vec![("{-", "-}")]);
@@ -70,13 +66,14 @@ impl Default for Config {
 
         Self {
             languages,
-            ext_to_language: ext_to_language,
+            ext_to_language,
         }
     }
 }
 
 impl Config {
-    pub fn get_by_extension(&self, ext: Option<&OsStr>) -> Option<&Info> {
+    #[inline]
+    pub(crate) fn get_by_extension(&self, ext: Option<&OsStr>) -> Option<&Info> {
         ext.and_then(|ext| ext.to_str())
             .and_then(|ext| self.ext_to_language.get(ext))
             .and_then(|language| self.languages.get(language))

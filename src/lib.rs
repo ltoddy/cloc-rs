@@ -1,8 +1,8 @@
-pub mod config;
-pub mod detail;
+mod config;
+mod detail;
 pub mod engine;
 pub mod error;
-pub mod executor;
+mod executor;
 pub mod options;
 pub mod pprint;
 pub mod spinner;
