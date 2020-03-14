@@ -11,7 +11,7 @@ pub struct Spinner {
 
 impl Spinner {
     pub fn new() -> Self {
-        // TODO: consider using other type
+        // TODO: consider remove Arc
         Self {
             cvar: Arc::new(Condvar::new()),
             lock: Arc::new(Mutex::new(false)),
@@ -25,17 +25,20 @@ impl Spinner {
             let mut out = stdout();
             for c in vec!['|', '/', '-', '\\'].iter().cycle() {
                 let status = format!("{} computing", c);
-                out.write_all(status.as_bytes()).unwrap();
-                out.flush().unwrap();
-                out.write_all("\x08".repeat(status.len()).as_bytes()).unwrap();
+                let _ = out.write_all(status.as_bytes());
+                let _ = out.flush();
+                let _ = out.write_all("\x08".repeat(status.len()).as_bytes());
                 sleep(Duration::from_millis(50));
 
                 let (lock, cvar) = &*pair;
-                let mut started = lock.lock().unwrap();
-                let result = cvar.wait_timeout(started, Duration::from_millis(100)).unwrap();
-                started = result.0;
-                if *started {
-                    break;
+
+                if let Ok(mut started) = lock.lock() {
+                    if let Ok(result) = cvar.wait_timeout(started, Duration::from_millis(100)) {
+                        started = result.0;
+                        if *started {
+                            break;
+                        }
+                    }
                 }
             }
         });
@@ -43,8 +46,9 @@ impl Spinner {
 
     pub fn stop(&self) {
         let Self { cvar, lock } = self;
-        let mut started = lock.lock().unwrap();
-        *started = true;
-        cvar.notify_one();
+        if let Ok(mut started) = lock.lock() {
+            *started = true;
+            cvar.notify_one();
+        }
     }
 }

@@ -19,7 +19,7 @@ impl FromStr for Output {
         match s.as_str() {
             "terminal" => Ok(Output::Terminal),
             "markdown" => Ok(Output::Markdown),
-            _ => Err(ClocError::InvalidCommandArgs),
+            _ => Err(ClocError::InvalidArg(s)),
         }
     }
 }
@@ -46,7 +46,7 @@ impl FromStr for SortBy {
             "blank" => Ok(SortBy::Blank),
             "comment" => Ok(SortBy::Comment),
             "code" => Ok(SortBy::Code),
-            _ => Err(ClocError::InvalidCommandArgs),
+            _ => Err(ClocError::InvalidArg(s)),
         }
     }
 }
@@ -65,7 +65,7 @@ impl FromStr for OrderBy {
         match s.as_str() {
             "asc" => Ok(OrderBy::Asc),
             "desc" => Ok(OrderBy::Desc),
-            _ => Err(ClocError::InvalidCommandArgs),
+            _ => Err(ClocError::InvalidArg(s)),
         }
     }
 }

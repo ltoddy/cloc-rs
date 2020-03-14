@@ -1,28 +1,10 @@
-use std::fmt;
-use std::io::Error;
+use thiserror::Error;
 
-#[derive(Debug)]
+#[derive(Error, Debug)]
 pub enum ClocError {
-    /// 未识别的文件, 可以识别的文件记录在`src/config.rs`的Config结构体中
-    Unrecognized,
-    /// 非文本文件, 例如二进制文件不做统计
-    NonTextFile,
-    /// Io异常
-    Io(std::io::Error),
-    /// 运行时的命令行参数的输入了无效参数
-    InvalidCommandArgs,
-}
+    #[error("{0}")]
+    Io(#[from] std::io::Error),
 
-impl std::error::Error for ClocError {}
-
-impl fmt::Display for ClocError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Debug::fmt(&self, f)
-    }
-}
-
-impl From<std::io::Error> for ClocError {
-    fn from(e: Error) -> Self {
-        ClocError::Io(e)
-    }
+    #[error("invalid argument: {0}")]
+    InvalidArg(String),
 }

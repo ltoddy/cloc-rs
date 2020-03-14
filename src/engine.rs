@@ -15,7 +15,6 @@ pub struct Engine {
     entry: PathBuf,
 }
 
-// TODO: rename
 enum Message {
     Content(PathBuf),
     End,
