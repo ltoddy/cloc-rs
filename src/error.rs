@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum ClocError {
+pub(crate) enum ClocError {
     #[error("{0}")]
     Io(#[from] std::io::Error),
 

@@ -1,6 +1,6 @@
 [package]
 name = "cloc"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["ltoddy <taoliu0509@gmail.com>"]
 edition = "2018"
 license = "MIT"
@@ -17,10 +17,6 @@ include = [
 ]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[[bin]]
-path = "src/bin/cloc.rs"
-name = "cloc"
 
 [dependencies]
 structopt = "0.3"

@@ -5,10 +5,10 @@ use std::time::Duration;
 
 use crate::detail::{LanguageDetail, SumDetail};
 
-pub struct PrettyPrinter {}
+pub(crate) struct PrettyPrinter {}
 
 impl PrettyPrinter {
-    pub fn terminal(languages: Vec<LanguageDetail>, sum: SumDetail, elapsed: Duration) {
+    pub(crate) fn terminal(languages: Vec<LanguageDetail>, sum: SumDetail, elapsed: Duration) {
         println!("{:>12.4} secs", elapsed.as_secs_f64());
         println!("┌────────────────────────────────────────────────────────────────────────┐");
         println!(
@@ -43,7 +43,7 @@ impl PrettyPrinter {
     }
 
     // TODO
-    pub fn markdown(languages: Vec<LanguageDetail>, sum: SumDetail, elapsed: Duration) {
+    pub(crate) fn markdown(languages: Vec<LanguageDetail>, sum: SumDetail, elapsed: Duration) {
         let mut filename = current_dir().expect("current working directory value is invalid");
         filename.push("cloc-report.md");
 
@@ -94,7 +94,7 @@ impl PrettyPrinter {
     }
 
     // TODO
-    pub fn html(_languages: Vec<LanguageDetail>, _sum: SumDetail, _elapsed: Duration) {}
+    pub(crate) fn _html(_languages: Vec<LanguageDetail>, _sum: SumDetail, _elapsed: Duration) {}
 }
 
 const SIZES: [&str; 9] = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];

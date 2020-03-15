@@ -53,17 +53,17 @@ impl LanguageDetail {
 }
 
 #[derive(Debug)]
-pub struct SumDetail {
-    pub files: usize,
-    pub bytes: u64,
-    pub blank: usize,
-    pub comment: usize,
-    pub code: usize,
+pub(crate) struct SumDetail {
+    pub(crate) files: usize,
+    pub(crate) bytes: u64,
+    pub(crate) blank: usize,
+    pub(crate) comment: usize,
+    pub(crate) code: usize,
 }
 
 impl SumDetail {
     #[inline]
-    pub fn zero() -> Self {
+    pub(crate) fn zero() -> Self {
         Self {
             files: 0,
             bytes: 0,

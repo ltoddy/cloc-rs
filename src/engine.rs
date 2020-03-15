@@ -23,14 +23,14 @@ enum Message {
 
 impl Engine {
     #[inline]
-    pub fn new(entry: PathBuf) -> Self {
+    pub(crate) fn new(entry: PathBuf) -> Self {
         Self {
             config: Config::default(),
             entry,
         }
     }
 
-    pub fn calculate(self) -> (Vec<LanguageDetail>, SumDetail) {
+    pub(crate) fn calculate(self) -> (Vec<LanguageDetail>, SumDetail) {
         let executor = ThreadPoolExecutor::new();
         let Engine { config, entry } = self;
 

@@ -6,7 +6,7 @@ use structopt::StructOpt;
 use crate::error::ClocError;
 
 #[derive(Debug)]
-pub enum Output {
+pub(crate) enum Output {
     Terminal,
     Markdown,
 }
@@ -25,7 +25,7 @@ impl FromStr for Output {
 }
 
 #[derive(Debug)]
-pub enum SortBy {
+pub(crate) enum SortBy {
     Language,
     Files,
     Size,
@@ -52,7 +52,7 @@ impl FromStr for SortBy {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub enum OrderBy {
+pub(crate) enum OrderBy {
     Asc,
     Desc,
 }
@@ -75,28 +75,28 @@ impl FromStr for OrderBy {
     name = "cloc - Count, or compute differences of, lines of source code and comments.",
     author = "ltoddy - toddy.liu@outlook.com"
 )]
-pub struct Options {
+pub(crate) struct Options {
     #[structopt(
         long = "output",
         default_value = "Terminal",
         help = "alternative parameters: Terminal, Markdown\n"
     )]
-    pub output: Output,
+    pub(crate) output: Output,
 
     #[structopt(
         long = "sort-by",
         default_value = "language",
         help = "alternative parameters: language, files, size, blank, comment, code\n"
     )]
-    pub sort_by: SortBy,
+    pub(crate) sort_by: SortBy,
 
     #[structopt(
         long = "order-by",
         default_value = "asc",
         help = "alternative parameters: asc, desc\n"
     )]
-    pub order_by: OrderBy,
+    pub(crate) order_by: OrderBy,
 
     #[structopt(name = "path", parse(from_os_str))]
-    pub entry: PathBuf,
+    pub(crate) entry: PathBuf,
 }

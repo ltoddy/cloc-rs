@@ -2,11 +2,23 @@ use std::time;
 
 use structopt::StructOpt;
 
-use cloc::engine::Engine;
-use cloc::options::{Options, Output, SortBy};
-use cloc::pprint::PrettyPrinter;
-use cloc::spinner::Spinner;
-use cloc::util::compare;
+mod config;
+mod detail;
+mod engine;
+mod error;
+mod executor;
+mod options;
+mod pprint;
+mod spinner;
+mod util;
+
+use crate::engine::Engine;
+use crate::options::{Options, Output, SortBy};
+use crate::pprint::PrettyPrinter;
+use crate::spinner::Spinner;
+use crate::util::compare;
+
+pub(crate) type ClocResult<T> = std::result::Result<T, crate::error::ClocError>;
 
 fn main() {
     let opt: Options = Options::from_args();
