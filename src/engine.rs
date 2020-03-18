@@ -1,6 +1,7 @@
 use std::fs;
 use std::mem;
 use std::path::PathBuf;
+use std::sync::atomic::AtomicUsize;
 use std::sync::mpsc::{sync_channel, SyncSender};
 use std::sync::{Arc, Mutex, RwLock};
 
@@ -8,12 +9,25 @@ use crate::config::{Config, Info};
 use crate::detail::Detail;
 use crate::detail::{aggregate_details, LanguageDetail, SumDetail};
 use crate::executor::ThreadPoolExecutor;
+use crate::wrap;
 use crate::ClocResult;
+
+// TODO: implement
+#[derive(Debug)]
+pub(crate) struct Report {
+    details: Vec<LanguageDetail>,
+    sum: SumDetail,
+    total_files: usize,
+}
 
 #[derive(Debug)]
 pub struct Engine {
     config: Config,
     entry: PathBuf,
+    total_files: AtomicUsize,
+    text_files: AtomicUsize,
+    ignored_files: AtomicUsize,
+    unrecognized_files: AtomicUsize,
 }
 
 enum Message {
@@ -27,22 +41,24 @@ impl Engine {
         Self {
             config: Config::default(),
             entry,
+            total_files: AtomicUsize::new(0),
+            text_files: AtomicUsize::new(0),
+            ignored_files: AtomicUsize::new(0),
+            unrecognized_files: AtomicUsize::new(0),
         }
     }
 
     pub(crate) fn calculate(self) -> (Vec<LanguageDetail>, SumDetail) {
         let executor = ThreadPoolExecutor::new();
-        let Engine { config, entry } = self;
+        let Engine { config, entry, total_files, .. } = self;
 
-        let config = Arc::new(RwLock::new(config));
+        let (config, _total_files) = wrap!(Arc, RwLock::new(config), total_files);
         let (sender, receiver) = sync_channel::<Message>(1024);
         let receiver = Arc::new(Mutex::new(receiver));
 
         let details = Arc::new(Mutex::new(Vec::new()));
         for _ in 0..executor.capacity() {
-            let receiver = Arc::clone(&receiver);
-            let config = Arc::clone(&config);
-            let details = Arc::clone(&details);
+            let (receiver, config, details) = wrap!(Arc::clone, &receiver, &config, &details);
 
             executor.submit(move || {
                 while let Ok(message) = receiver

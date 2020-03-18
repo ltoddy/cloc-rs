@@ -7,6 +7,7 @@ mod detail;
 mod engine;
 mod error;
 mod executor;
+mod macros;
 mod options;
 mod pprint;
 mod spinner;
