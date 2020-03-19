@@ -48,7 +48,12 @@ impl Default for Config {
         language!("CHeader", vec!["h"], vec!["//"], vec![("/*", "*/")]);
         language!("Cpp", vec!["cpp"], vec!["//"], vec![("/*", "*/")]);
         language!("CppHeader", vec!["hpp"], vec!["//"], vec![("/*", "*/")]);
-        language!("CSS", vec!["css", "sass", "less", "scss"], vec!["//"], vec![("/*", "*/")]);
+        language!(
+            "CSS",
+            vec!["css", "sass", "less", "scss"],
+            vec!["//"],
+            vec![("/*", "*/")]
+        );
         language!("Go", vec!["go"], vec!["//"], vec![("/*", "*/"), ("/**", "*/")]);
         language!("Html", vec!["html", "xhtml", "hml"]);
         language!("Haskell", vec!["hs"], vec!["--"], vec![("{-", "-}")]);

@@ -50,7 +50,12 @@ impl Engine {
 
     pub(crate) fn calculate(self) -> (Vec<LanguageDetail>, SumDetail) {
         let executor = ThreadPoolExecutor::new();
-        let Engine { config, entry, total_files, .. } = self;
+        let Engine {
+            config,
+            entry,
+            total_files,
+            ..
+        } = self;
 
         let (config, _total_files) = wrap!(Arc, RwLock::new(config), total_files);
         let (sender, receiver) = sync_channel::<Message>(1024);
@@ -120,7 +125,12 @@ fn explore(dir: PathBuf, sender: &SyncSender<Message>) {
 }
 
 fn calculate(path: PathBuf, info: Info) -> ClocResult<Detail> {
-    let Info { language, single, multi, .. } = info;
+    let Info {
+        language,
+        single,
+        multi,
+        ..
+    } = info;
 
     let content = fs::read_to_string(&path)?;
     let metadata = path.metadata()?;

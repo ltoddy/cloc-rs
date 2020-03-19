@@ -23,7 +23,12 @@ pub(crate) type ClocResult<T> = std::result::Result<T, crate::error::ClocError>;
 
 fn main() {
     let opt: Options = Options::from_args();
-    let Options { output, sort_by, order_by, entry } = opt;
+    let Options {
+        output,
+        sort_by,
+        order_by,
+        entry,
+    } = opt;
 
     let spinner = Spinner::new();
     let engine = Engine::new(entry);

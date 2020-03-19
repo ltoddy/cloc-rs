@@ -39,7 +39,9 @@ impl LanguageDetail {
         let (bytes, blank, comment, code) = details
             .iter()
             .map(|detail| (detail.bytes, detail.blank, detail.comment, detail.code))
-            .fold((0, 0, 0, 0), |acc, x| (acc.0 + x.0, acc.1 + x.1, acc.2 + x.2, acc.3 + x.3));
+            .fold((0, 0, 0, 0), |acc, x| {
+                (acc.0 + x.0, acc.1 + x.1, acc.2 + x.2, acc.3 + x.3)
+            });
 
         Self {
             language,
@@ -79,7 +81,13 @@ pub(crate) fn aggregate_details(details: Vec<Detail>) -> (Vec<LanguageDetail>, S
     let mut sum = SumDetail::zero();
 
     for detail in details {
-        let Detail { language, bytes, blank, comment, code } = detail;
+        let Detail {
+            language,
+            bytes,
+            blank,
+            comment,
+            code,
+        } = detail;
         sum.files += 1;
         sum.bytes += bytes;
         sum.blank += blank;
