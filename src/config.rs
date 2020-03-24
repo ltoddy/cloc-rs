@@ -62,7 +62,12 @@ impl Default for Config {
         language!("Julia", vec!["jl"], vec!["#"], vec![("#=", "=#")]);
         language!("Java", vec!["java"], vec!["//"], vec![("/*", "*/")]);
         language!("Markdown", vec!["md"]);
-        language!("Php", vec!["php4", "php5", "php", "phtml"], vec!["#", "//"], vec![("/*", "*/"), ("/**", "*/")]);
+        language!(
+            "Php",
+            vec!["php4", "php5", "php", "phtml"],
+            vec!["#", "//"],
+            vec![("/*", "*/"), ("/**", "*/")]
+        );
         language!("Python", vec!["py"], vec!["#"], vec![("'''", "'''"), (r#"""#, r#"""#)]);
         language!("Rust", vec!["rs"], vec!["//", "///", "///!"], vec![("/*", "*/")]);
         language!("Ruby", vec!["rb"], vec!["#"], vec![("=", "=")]);
