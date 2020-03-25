@@ -43,7 +43,7 @@ impl Default for Config {
                 language!($language, $ext, vec![], vec![])
             };
         }
-
+        language!("Bat", vec!["bat", "cmd"], vec!["@rem"]);
         language!("C", vec!["c"], vec!["//"], vec![("/*", "*/")]);
         language!("CHeader", vec!["h"], vec!["//"], vec![("/*", "*/")]);
         language!("Cpp", vec!["cpp"], vec!["//"], vec![("/*", "*/")]);
@@ -55,12 +55,13 @@ impl Default for Config {
             vec![("/*", "*/")]
         );
         language!("Go", vec!["go"], vec!["//"], vec![("/*", "*/"), ("/**", "*/")]);
+        language!("Gradle", vec!["gradle"], vec!["//"], vec![("/*", "*/"), ("/**", "*/")]);
         language!("Html", vec!["html", "xhtml", "hml"]);
         language!("Haskell", vec!["hs"], vec!["--"], vec![("{-", "-}")]);
+        language!("Java", vec!["java"], vec!["//"], vec![("/*", "*/")]);
         language!("JavaScript", vec!["js", "ejs"], vec!["//"], vec![("/*", "*/")]);
         language!("Json", vec!["json"]);
         language!("Julia", vec!["jl"], vec!["#"], vec![("#=", "=#")]);
-        language!("Java", vec!["java"], vec!["//"], vec![("/*", "*/")]);
         language!("Markdown", vec!["md"]);
         language!(
             "Php",
@@ -68,13 +69,22 @@ impl Default for Config {
             vec!["#", "//"],
             vec![("/*", "*/"), ("/**", "*/")]
         );
+        language!("Protobuf", vec!["proto"], vec!["//"]);
         language!("Python", vec!["py"], vec!["#"], vec![("'''", "'''"), (r#"""#, r#"""#)]);
         language!("Rust", vec!["rs"], vec!["//", "///", "///!"], vec![("/*", "*/")]);
         language!("Ruby", vec!["rb"], vec!["#"], vec![("=", "=")]);
         language!("Scala", vec!["scala"], vec!["//"], vec![("/*", "*/")]);
         language!("Shell", vec!["sh"], vec!["#"]);
+        language!("Sql", vec!["sql"], vec!["#", "--"], vec![("/*", "*/")]);
+        language!("Toml", vec!["toml"], vec!["#"]);
         language!("TypeScript", vec!["ts"], vec!["//"], vec![("/*", "*/")]);
-
+        language!(
+            "Xml",
+            vec!["xml"],
+            vec!["!there is no specific single line comment!"],
+            vec![("<!--", "-->"), ("<![CDATA[", "]]>")]
+        );
+        language!("Yaml", vec!["yml", "yaml"], vec!["#"]);
         Self {
             languages,
             ext_to_language,
