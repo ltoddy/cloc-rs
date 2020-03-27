@@ -48,6 +48,7 @@ impl Engine {
         }
     }
 
+    // TODO: 这个函数应该返回`Report`结构体, 这样, pprint.rs中的输出函数只需要知道`Report`结构体就可以了, `LanguageDetail`与`SumDetail`便可以是crate private的了.
     pub(crate) fn calculate(self) -> (Vec<LanguageDetail>, SumDetail) {
         let executor = ThreadPoolExecutor::new();
         let Engine {
@@ -105,7 +106,7 @@ impl Engine {
 }
 
 fn explore(dir: PathBuf, sender: &SyncSender<Message>) {
-    // TODO: refactor
+    // TODO: refactor, 这个函数使用了两个is_file, 按理来说使用一次就足够了.
     if dir.is_file() {
         sender.send(Message::Content(dir)).unwrap();
     } else if dir.is_dir() {
