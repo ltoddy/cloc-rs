@@ -1,5 +1,6 @@
 use std::fs;
 use std::mem;
+use std::io::Read;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicUsize;
 use std::sync::mpsc::{sync_channel, SyncSender};
@@ -63,7 +64,7 @@ impl Engine {
 
         let details = Arc::new(Mutex::new(Vec::new()));
         for _ in 0..executor.capacity() {
-            let (receiver, config, details) = wrap!(Arc::clone, &receiver, &config, &details);
+            let (receiver, mut config, details) = wrap!(Arc::clone, &receiver, &config, &details);
 
             executor.submit(move || {
                 while let Ok(message) = receiver
