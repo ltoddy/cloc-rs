@@ -95,7 +95,7 @@ impl Engine {
                 }
             });
         }
-        explore(entry, &sender);
+        Self::explore(entry, &sender);
         for _ in 0..executor.capacity() {
             sender.send(Message::End).unwrap();
         }
@@ -103,23 +103,15 @@ impl Engine {
 
         aggregate_details(Arc::try_unwrap(details).unwrap().into_inner().unwrap())
     }
-}
 
-fn explore(dir: PathBuf, sender: &SyncSender<Message>) {
-    // TODO: refactor, 这个函数使用了两个is_file, 按理来说使用一次就足够了.
-    if dir.is_file() {
-        sender.send(Message::Content(dir)).unwrap();
-    } else if dir.is_dir() {
-        let entries = fs::read_dir(dir).unwrap();
-        for entry in entries {
-            let entry = entry.unwrap();
-
-            let path = entry.path();
-            if path.is_file() {
-                // TODO: remove unwrap
-                sender.send(Message::Content(path)).unwrap();
-            } else if path.is_dir() {
-                explore(path, sender);
+    fn explore(dir: PathBuf, sender: &SyncSender<Message>) {
+        if dir.is_file() {
+            sender.send(Message::Content(dir)).unwrap();
+        } else if dir.is_dir() {
+            let entries = fs::read_dir(dir).unwrap();
+            for entry in entries {
+                let entry = entry.unwrap();
+                Self::explore(entry.path(), sender);
             }
         }
     }
