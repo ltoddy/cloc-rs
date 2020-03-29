@@ -9,7 +9,7 @@ pub(crate) struct Info {
     pub(crate) multi: Vec<(&'static str, &'static str)>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct Config {
     pub(crate) languages: HashMap<&'static str, Info>,
     ext_to_language: HashMap<&'static str, &'static str>,

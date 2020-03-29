@@ -70,4 +70,5 @@ $ cargo install --path cloc-rs
 - [ ] 美化输出
 - [ ] 完善测试
 - [ ] 完善文档
+- [ ] CI加上`cargo clippy --release -- -D clippy::all`限制
 - [ ] ...

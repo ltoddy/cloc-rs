@@ -31,7 +31,7 @@ fn main() {
     } = opt;
 
     let spinner = Spinner::new();
-    let engine = Engine::new(entry);
+    let mut engine = Engine::new(entry);
     let now = time::Instant::now();
     spinner.start();
     let (mut languages, sum) = engine.calculate();
