@@ -46,7 +46,7 @@ or
 
 ```
 $ git clone https://github.com/ltoddy/cloc-rs.git
-$ cargo install --path cloc-rs
+$ cargo install --path .
 ```
 
 ### How to contribute(support for more language)
