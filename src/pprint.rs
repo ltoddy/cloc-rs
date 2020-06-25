@@ -4,11 +4,14 @@ use std::io::Write;
 use std::time::Duration;
 
 use crate::detail::{LanguageDetail, SumDetail};
+use crate::engine::Report;
 
 pub(crate) struct PrettyPrinter {}
 
 impl PrettyPrinter {
-    pub(crate) fn terminal(languages: Vec<LanguageDetail>, sum: SumDetail, elapsed: Duration) {
+    pub(crate) fn terminal(report: Report, elapsed: Duration) {
+        let Report { languages, sum } = report;
+
         println!("{:>12.4} secs", elapsed.as_secs_f64());
         println!("┌────────────────────────────────────────────────────────────────────────┐");
         println!(
@@ -43,7 +46,9 @@ impl PrettyPrinter {
     }
 
     // TODO
-    pub(crate) fn markdown(languages: Vec<LanguageDetail>, sum: SumDetail, elapsed: Duration) {
+    pub(crate) fn markdown(report: Report, elapsed: Duration) {
+        let Report { languages, sum } = report;
+
         let mut filename = current_dir().expect("current working directory value is invalid");
         filename.push("cloc-report.md");
 

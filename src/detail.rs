@@ -1,3 +1,4 @@
+use crate::engine::Report;
 use std::collections::HashMap;
 
 /// 读取单个文件, 分析后得出的详情
@@ -76,7 +77,7 @@ impl SumDetail {
     }
 }
 
-pub(crate) fn aggregate_details(details: Vec<Detail>) -> (Vec<LanguageDetail>, SumDetail) {
+pub(crate) fn aggregate_details(details: Vec<Detail>) -> Report {
     let mut kinds = HashMap::<&str, Vec<Detail>>::new();
     let mut sum = SumDetail::zero();
 
@@ -100,7 +101,7 @@ pub(crate) fn aggregate_details(details: Vec<Detail>) -> (Vec<LanguageDetail>, S
             .or_insert_with(|| vec![detail]);
     }
 
-    (
+    Report::new(
         kinds
             .iter()
             .map(|(language, details)| LanguageDetail::from_details(language, details))

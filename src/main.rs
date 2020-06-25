@@ -34,9 +34,9 @@ fn main() {
     let mut engine = Engine::new(entry);
     let now = time::Instant::now();
     spinner.start();
-    let (mut languages, sum) = engine.calculate();
+    let mut report = engine.calculate();
 
-    languages.sort_by(|prev, next| match sort_by {
+    report.languages.sort_by(|prev, next| match sort_by {
         SortBy::Language => compare(prev.language, next.language, order_by),
         SortBy::Files => compare(prev.files, next.files, order_by),
         SortBy::Size => compare(prev.bytes, next.bytes, order_by),
@@ -48,7 +48,7 @@ fn main() {
     spinner.stop();
 
     match output {
-        Output::Terminal => PrettyPrinter::terminal(languages, sum, elapsed),
-        Output::Markdown => PrettyPrinter::markdown(languages, sum, elapsed),
+        Output::Terminal => PrettyPrinter::terminal(report, elapsed),
+        Output::Markdown => PrettyPrinter::markdown(report, elapsed),
     }
 }

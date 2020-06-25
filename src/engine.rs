@@ -14,18 +14,13 @@ use crate::ClocResult;
 // TODO: implement
 #[derive(Debug)]
 pub(crate) struct Report {
-    details: Vec<LanguageDetail>,
-    sum: SumDetail,
-    total_files: usize,
+    pub(crate) languages: Vec<LanguageDetail>,
+    pub(crate) sum: SumDetail,
 }
 
 impl Report {
-    fn new(details: Vec<LanguageDetail>, sum: SumDetail, total_files: usize) -> Self {
-        Self {
-            details,
-            sum,
-            total_files,
-        }
+    pub(crate) fn new(languages: Vec<LanguageDetail>, sum: SumDetail) -> Self {
+        Self { languages, sum }
     }
 }
 
@@ -58,7 +53,7 @@ impl Engine {
     }
 
     // TODO: 这个函数应该返回`Report`结构体, 这样, pprint.rs中的输出函数只需要知道`Report`结构体就可以了, `LanguageDetail`与`SumDetail`便可以是crate private的了.
-    pub(crate) fn calculate(&mut self) -> (Vec<LanguageDetail>, SumDetail) {
+    pub(crate) fn calculate(&mut self) -> Report {
         let executor = ThreadPoolExecutor::new();
         let (sender, receiver) = sync_channel::<Message>(1024);
 
