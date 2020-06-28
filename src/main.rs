@@ -2,6 +2,7 @@ use std::time;
 
 use structopt::StructOpt;
 
+mod calculate;
 mod config;
 mod detail;
 mod engine;

@@ -9,9 +9,25 @@ pub(crate) struct Info {
     pub(crate) multi: Vec<(&'static str, &'static str)>,
 }
 
+impl Info {
+    pub fn new(
+        language: &'static str,
+        file_ext: Vec<&'static str>,
+        single: Vec<&'static str>,
+        multi: Vec<(&'static str, &'static str)>,
+    ) -> Self {
+        Self {
+            language,
+            file_ext,
+            single,
+            multi,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub(crate) struct Config {
-    pub(crate) languages: HashMap<&'static str, Info>,
+    languages: HashMap<&'static str, Info>,
     ext_to_language: HashMap<&'static str, &'static str>,
 }
 
@@ -23,15 +39,7 @@ impl Default for Config {
 
         macro_rules! language {
             ($language: expr, $ext: expr, $single: expr, $multi: expr) => {{
-                languages.insert(
-                    $language,
-                    Info {
-                        language: $language,
-                        file_ext: $ext,
-                        single: $single,
-                        multi: $multi,
-                    },
-                );
+                languages.insert($language, Info::new($language, $ext, $single, $multi));
                 for e in $ext {
                     ext_to_language.insert(e, $language);
                 }
