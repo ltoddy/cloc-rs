@@ -19,6 +19,7 @@ use crate::options::{Options, Output, SortBy};
 use crate::pprint::PrettyPrinter;
 use crate::spinner::Spinner;
 use crate::util::compare;
+use std::env::current_dir;
 
 pub(crate) type ClocResult<T> = std::result::Result<T, crate::error::ClocError>;
 
@@ -30,6 +31,10 @@ fn main() {
         order_by,
         entry,
     } = opt;
+    let entry = entry.unwrap_or_else(|| {
+        eprintln!("No directory specified, so use current directory as entry.\n");
+        current_dir().expect("current directory does not exist")
+    });
 
     let spinner = Spinner::new();
     let mut engine = Engine::new(entry);

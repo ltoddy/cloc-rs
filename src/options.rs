@@ -98,5 +98,5 @@ pub(crate) struct Options {
     pub(crate) order_by: OrderBy,
 
     #[structopt(name = "path", parse(from_os_str))]
-    pub(crate) entry: PathBuf,
+    pub(crate) entry: Option<PathBuf>,
 }

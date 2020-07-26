@@ -1,7 +1,7 @@
+use std::env::current_dir;
 use std::fs;
 use std::mem;
-use std::path::{Path, PathBuf};
-use std::env::current_dir;
+use std::path::PathBuf;
 use std::sync::atomic::AtomicUsize;
 use std::sync::mpsc::{sync_channel, SyncSender};
 use std::sync::{Arc, Mutex, RwLock};
