@@ -1,25 +1,23 @@
-use std::fmt::Formatter;
-
 #[derive(Debug)]
-pub(crate) enum ClocError {
+pub enum Error {
     Io(std::io::Error),
 
     InvalidArg(String),
 }
 
-impl std::error::Error for ClocError {}
+impl std::error::Error for Error {}
 
-impl From<std::io::Error> for ClocError {
+impl From<std::io::Error> for Error {
     fn from(err: std::io::Error) -> Self {
-        ClocError::Io(err)
+        Error::Io(err)
     }
 }
 
-impl std::fmt::Display for ClocError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ClocError::Io(err) => write!(f, "{}", err),
-            ClocError::InvalidArg(s) => write!(f, "invalid argument: {}", s),
+            Error::Io(err) => write!(f, "{}", err),
+            Error::InvalidArg(s) => write!(f, "invalid argument: {}", s),
         }
     }
 }

@@ -34,18 +34,18 @@ impl Worker {
     }
 }
 
-pub(crate) struct ThreadPoolExecutor {
+pub struct ThreadPoolExecutor {
     workers: Vec<Worker>,
     sender: SyncSender<Message>,
     capacity: usize,
 }
 
 impl ThreadPoolExecutor {
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
         Self::with_capacity(num_cpus::get() * 5)
     }
 
-    pub(crate) fn with_capacity(capacity: usize) -> Self {
+    pub fn with_capacity(capacity: usize) -> Self {
         assert!(capacity > 0);
 
         let (sender, receiver) = sync_channel::<Message>(1024);
@@ -63,11 +63,11 @@ impl ThreadPoolExecutor {
         }
     }
 
-    pub(crate) fn capacity(&self) -> usize {
+    pub fn capacity(&self) -> usize {
         self.capacity
     }
 
-    pub(crate) fn submit<F>(&self, f: F)
+    pub fn submit<F>(&self, f: F)
     where
         F: FnOnce() + Send + 'static,
     {

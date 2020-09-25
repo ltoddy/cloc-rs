@@ -2,11 +2,11 @@ use std::collections::HashMap;
 use std::ffi::OsStr;
 
 #[derive(Debug, Clone)]
-pub(crate) struct Info {
-    pub(crate) language: &'static str,
-    pub(crate) file_ext: Vec<&'static str>,
-    pub(crate) single: Vec<&'static str>,
-    pub(crate) multi: Vec<(&'static str, &'static str)>,
+pub struct Info {
+    pub language: &'static str,
+    pub file_ext: Vec<&'static str>,
+    pub single: Vec<&'static str>,
+    pub multi: Vec<(&'static str, &'static str)>,
 }
 
 impl Info {
@@ -26,7 +26,7 @@ impl Info {
 }
 
 #[derive(Debug, Clone)]
-pub(crate) struct Config {
+pub struct Config {
     languages: HashMap<&'static str, Info>,
     ext_to_language: HashMap<&'static str, &'static str>,
 }
@@ -104,7 +104,7 @@ impl Default for Config {
 
 impl Config {
     #[inline]
-    pub(crate) fn get_by_extension(&self, ext: Option<&OsStr>) -> Option<&Info> {
+    pub fn get_by_extension(&self, ext: Option<&OsStr>) -> Option<&Info> {
         ext.and_then(|ext| ext.to_str())
             .and_then(|ext| self.ext_to_language.get(ext))
             .and_then(|language| self.languages.get(language))

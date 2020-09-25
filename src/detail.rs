@@ -3,12 +3,12 @@ use std::collections::HashMap;
 
 /// 读取单个文件, 分析后得出的详情
 #[derive(Copy, Clone, Debug)]
-pub(crate) struct Detail {
-    pub(crate) language: &'static str,
-    pub(crate) bytes: u64,
-    pub(crate) blank: usize,
-    pub(crate) comment: usize,
-    pub(crate) code: usize,
+pub struct Detail {
+    pub language: &'static str,
+    pub bytes: u64,
+    pub blank: usize,
+    pub comment: usize,
+    pub code: usize,
 }
 
 impl Detail {
@@ -56,17 +56,17 @@ impl LanguageDetail {
 }
 
 #[derive(Debug)]
-pub(crate) struct SumDetail {
-    pub(crate) files: usize,
-    pub(crate) bytes: u64,
-    pub(crate) blank: usize,
-    pub(crate) comment: usize,
-    pub(crate) code: usize,
+pub struct SumDetail {
+    pub files: usize,
+    pub bytes: u64,
+    pub blank: usize,
+    pub comment: usize,
+    pub code: usize,
 }
 
 impl SumDetail {
     #[inline]
-    pub(crate) fn zero() -> Self {
+    pub fn zero() -> Self {
         Self {
             files: 0,
             bytes: 0,
@@ -77,7 +77,7 @@ impl SumDetail {
     }
 }
 
-pub(crate) fn aggregate_details(details: Vec<Detail>) -> Report {
+pub fn aggregate_details(details: Vec<Detail>) -> Report {
     let mut kinds = HashMap::<&str, Vec<Detail>>::new();
     let mut sum = SumDetail::zero();
 

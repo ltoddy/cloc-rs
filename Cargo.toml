@@ -1,6 +1,6 @@
 [package]
 name = "cloc"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["ltoddy <taoliu0509@gmail.com>"]
 edition = "2018"
 license = "MIT"
@@ -15,8 +15,6 @@ include = [
     "LICENSE",
     "README.md"
 ]
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 structopt = "0.3"

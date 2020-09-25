@@ -3,29 +3,29 @@ use std::str::FromStr;
 
 use structopt::StructOpt;
 
-use crate::error::ClocError;
+use crate::error::Error;
 
 #[derive(Debug)]
-pub(crate) enum Output {
+pub enum Output {
     Terminal,
     Markdown,
 }
 
 impl FromStr for Output {
-    type Err = ClocError;
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let s = s.to_lowercase();
         match s.as_str() {
             "terminal" => Ok(Output::Terminal),
             "markdown" => Ok(Output::Markdown),
-            _ => Err(ClocError::InvalidArg(s)),
+            _ => Err(Error::InvalidArg(s)),
         }
     }
 }
 
 #[derive(Debug)]
-pub(crate) enum SortBy {
+pub enum SortBy {
     Language,
     Files,
     Size,
@@ -35,7 +35,7 @@ pub(crate) enum SortBy {
 }
 
 impl FromStr for SortBy {
-    type Err = ClocError;
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let s = s.to_lowercase();
@@ -46,26 +46,26 @@ impl FromStr for SortBy {
             "blank" => Ok(SortBy::Blank),
             "comment" => Ok(SortBy::Comment),
             "code" => Ok(SortBy::Code),
-            _ => Err(ClocError::InvalidArg(s)),
+            _ => Err(Error::InvalidArg(s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum OrderBy {
+pub enum OrderBy {
     Asc,
     Desc,
 }
 
 impl FromStr for OrderBy {
-    type Err = ClocError;
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let s = s.to_lowercase();
         match s.as_str() {
             "asc" => Ok(OrderBy::Asc),
             "desc" => Ok(OrderBy::Desc),
-            _ => Err(ClocError::InvalidArg(s)),
+            _ => Err(Error::InvalidArg(s)),
         }
     }
 }
@@ -75,28 +75,33 @@ impl FromStr for OrderBy {
     name = "cloc - Count, or compute differences of, lines of source code and comments",
     author = "ltoddy - toddy.liu@outlook.com"
 )]
-pub(crate) struct Options {
+pub struct Options {
     #[structopt(
         long = "output",
         default_value = "Terminal",
         help = "alternative parameters: Terminal, Markdown\n"
     )]
-    pub(crate) output: Output,
+    pub output: Output,
 
     #[structopt(
         long = "sort-by",
         default_value = "language",
         help = "alternative parameters: language, files, size, blank, comment, code\n"
     )]
-    pub(crate) sort_by: SortBy,
+    pub sort_by: SortBy,
 
     #[structopt(
         long = "order-by",
         default_value = "asc",
         help = "alternative parameters: asc, desc\n"
     )]
-    pub(crate) order_by: OrderBy,
+    pub order_by: OrderBy,
 
     #[structopt(name = "path", parse(from_os_str))]
-    pub(crate) entry: Option<PathBuf>,
+    pub entry: Option<PathBuf>,
+
+    // #[structopt(long = "ignore")]
+    // pub ignore_path: Option<PathBuf>,
+    #[structopt(long = "ignore-file")]
+    pub ignore_file: Option<PathBuf>,
 }

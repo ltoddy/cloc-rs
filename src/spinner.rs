@@ -5,20 +5,20 @@ use std::thread::{sleep, spawn};
 use std::time::Duration;
 
 #[derive(Debug, Default)]
-pub(crate) struct Spinner {
+pub struct Spinner {
     cvar: Arc<Condvar>,
     lock: Arc<Mutex<bool>>,
 }
 
 impl Spinner {
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             cvar: Arc::new(Condvar::new()),
             lock: Arc::new(Mutex::new(false)),
         }
     }
 
-    pub(crate) fn start(&self) {
+    pub fn start(&self) {
         let Self { cvar, lock } = self;
         let pair = (Arc::clone(&lock), Arc::clone(&cvar));
         spawn(move || {
@@ -44,7 +44,7 @@ impl Spinner {
         });
     }
 
-    pub(crate) fn stop(&self) {
+    pub fn stop(&self) {
         let Self { cvar, lock } = self;
         if let Ok(mut started) = lock.lock() {
             *started = true;

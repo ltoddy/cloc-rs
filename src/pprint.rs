@@ -6,10 +6,10 @@ use std::time::Duration;
 use crate::detail::{LanguageDetail, SumDetail};
 use crate::engine::Report;
 
-pub(crate) struct PrettyPrinter {}
+pub struct PrettyPrinter();
 
 impl PrettyPrinter {
-    pub(crate) fn terminal(report: Report, elapsed: Duration) {
+    pub fn terminal(report: Report, elapsed: Duration) {
         let Report { languages, sum } = report;
 
         println!("{:>12.4} secs", elapsed.as_secs_f64());
@@ -46,7 +46,7 @@ impl PrettyPrinter {
     }
 
     // TODO
-    pub(crate) fn markdown(report: Report, elapsed: Duration) {
+    pub fn markdown(report: Report, elapsed: Duration) {
         let Report { languages, sum } = report;
 
         let mut filename = current_dir().expect("current working directory value is invalid");
@@ -99,7 +99,7 @@ impl PrettyPrinter {
     }
 
     // TODO
-    pub(crate) fn _html(_languages: Vec<LanguageDetail>, _sum: SumDetail, _elapsed: Duration) {}
+    pub fn _html(_languages: Vec<LanguageDetail>, _sum: SumDetail, _elapsed: Duration) {}
 }
 
 const SIZES: [&str; 9] = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];

@@ -3,13 +3,13 @@ use std::path::Path;
 
 use crate::config::Info;
 use crate::detail::Detail;
-use crate::ClocResult;
+use crate::Result;
 
-pub(crate) fn calculate<P: AsRef<Path>>(path: P, info: &Info) -> ClocResult<Detail> {
+pub fn calculate<P: AsRef<Path>>(path: P, info: &Info) -> Result<Detail> {
     calculate_impl(path.as_ref(), info)
 }
 
-fn calculate_impl(path: &Path, info: &Info) -> ClocResult<Detail> {
+fn calculate_impl(path: &Path, info: &Info) -> Result<Detail> {
     let Info {
         language,
         single,

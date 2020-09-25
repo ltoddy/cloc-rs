@@ -1,7 +1,3 @@
-use std::time;
-
-use structopt::StructOpt;
-
 mod calculate;
 mod config;
 mod detail;
@@ -14,30 +10,43 @@ mod pprint;
 mod spinner;
 mod util;
 
+use std::env::current_dir;
+use std::fs;
+use std::time;
+
+use structopt::StructOpt;
+
 use crate::engine::Engine;
 use crate::options::{Options, Output, SortBy};
 use crate::pprint::PrettyPrinter;
 use crate::spinner::Spinner;
 use crate::util::compare;
-use std::env::current_dir;
 
-pub(crate) type ClocResult<T> = std::result::Result<T, crate::error::ClocError>;
+type Result<T> = std::result::Result<T, crate::error::Error>;
 
 fn main() {
+    if let Err(e) = run() {
+        eprintln!("{}", e)
+    }
+}
+
+fn run() -> Result<()> {
     let opt: Options = Options::from_args();
     let Options {
         output,
         sort_by,
         order_by,
         entry,
+        ignore_file,
     } = opt;
-    let entry = entry.unwrap_or_else(|| {
+
+    let entry = entry.and_then(|entry| fs::canonicalize(entry).ok()).unwrap_or_else(|| {
         eprintln!("No directory specified, so use current directory as entry.\n");
         current_dir().expect("current directory does not exist")
     });
 
     let spinner = Spinner::new();
-    let mut engine = Engine::new(entry);
+    let mut engine = Engine::new(entry, ignore_file);
     let now = time::Instant::now();
     spinner.start();
     let mut report = engine.calculate();
@@ -57,4 +66,6 @@ fn main() {
         Output::Terminal => PrettyPrinter::terminal(report, elapsed),
         Output::Markdown => PrettyPrinter::markdown(report, elapsed),
     }
+
+    Ok(())
 }

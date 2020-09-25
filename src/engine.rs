@@ -1,7 +1,7 @@
 use std::env::current_dir;
 use std::fs;
 use std::mem;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::atomic::AtomicUsize;
 use std::sync::mpsc::{sync_channel, SyncSender};
 use std::sync::{Arc, Mutex, RwLock};
@@ -13,19 +13,20 @@ use crate::executor::ThreadPoolExecutor;
 
 // TODO: implement
 #[derive(Debug)]
-pub(crate) struct Report {
-    pub(crate) languages: Vec<LanguageDetail>,
-    pub(crate) sum: SumDetail,
+pub struct Report {
+    pub languages: Vec<LanguageDetail>,
+    pub sum: SumDetail,
 }
 
 impl Report {
-    pub(crate) fn new(languages: Vec<LanguageDetail>, sum: SumDetail) -> Self {
+    pub fn new(languages: Vec<LanguageDetail>, sum: SumDetail) -> Self {
         Self { languages, sum }
     }
 }
 
 #[derive(Debug)]
 pub struct Engine {
+    ignore_list: Vec<PathBuf>,
     config: Config,
     entry: PathBuf,
     total_files: usize,
@@ -40,14 +41,16 @@ enum Message {
 }
 
 impl Engine {
-    #[inline]
-    pub(crate) fn new(mut entry: PathBuf) -> Self {
+    pub fn new(mut entry: PathBuf, ignore_file: Option<PathBuf>) -> Self {
         if !entry.exists() {
             println!("can't find path: {:?}, so use current directory as entry.", entry);
             entry = current_dir().unwrap();
         }
 
+        let ignore_list = Self::read_ignore_list(ignore_file).unwrap_or(Vec::<PathBuf>::new());
+
         Self {
+            ignore_list,
             config: Config::default(),
             entry,
             total_files: 0,
@@ -58,7 +61,7 @@ impl Engine {
     }
 
     // TODO: 这个函数应该返回`Report`结构体, 这样, pprint.rs中的输出函数只需要知道`Report`结构体就可以了, `LanguageDetail`与`SumDetail`便可以是crate private的了.
-    pub(crate) fn calculate(&mut self) -> Report {
+    pub fn calculate(&mut self) -> Report {
         let executor = ThreadPoolExecutor::new();
         let (sender, receiver) = sync_channel::<Message>(1024);
 
@@ -110,7 +113,7 @@ impl Engine {
     }
 
     fn explore(&mut self, dir: PathBuf, sender: &SyncSender<Message>) {
-        if dir.is_file() {
+        if dir.is_file() && !self.is_ignored_file(&dir) {
             self.total_files += 1;
             sender.send(Message::Content(dir)).unwrap();
         } else if dir.is_dir() {
@@ -120,5 +123,32 @@ impl Engine {
                 self.explore(entry.path(), sender);
             }
         }
+    }
+
+    fn read_ignore_list(filename: Option<PathBuf>) -> Option<Vec<PathBuf>> {
+        filename.and_then(|filename| {
+            fs::read_to_string(filename)
+                .map(|content| {
+                    content
+                        .lines()
+                        .filter_map(|path| fs::canonicalize(path).ok())
+                        .collect::<Vec<_>>()
+                })
+                .ok()
+        })
+    }
+
+    #[inline]
+    fn is_ignored_file<P: AsRef<Path>>(&self, filename: P) -> bool {
+        self.is_ignored_file_impl(filename.as_ref())
+    }
+
+    fn is_ignored_file_impl(&self, filename: &Path) -> bool {
+        if filename.is_dir() {
+            return false;
+        }
+        self.ignore_list
+            .iter()
+            .any(|ignored_path| filename.starts_with(ignored_path))
     }
 }
