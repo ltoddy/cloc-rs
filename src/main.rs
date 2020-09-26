@@ -1,26 +1,31 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+
 mod calculate;
+mod calculator;
 mod config;
 mod detail;
 mod engine;
 mod error;
 mod executor;
+mod explorer;
+mod machine;
 mod macros;
+mod message;
 mod options;
 mod pprint;
+mod reporter;
 mod spinner;
 mod util;
 
 use std::env::current_dir;
 use std::fs;
-use std::time;
 
 use structopt::StructOpt;
 
-use crate::engine::Engine;
-use crate::options::{Options, Output, SortBy};
-use crate::pprint::PrettyPrinter;
-use crate::spinner::Spinner;
-use crate::util::compare;
+use crate::machine::AutomaticMachinery;
+use crate::options::Options;
 
 type Result<T> = std::result::Result<T, crate::error::Error>;
 
@@ -45,27 +50,8 @@ fn run() -> Result<()> {
         current_dir().expect("current directory does not exist")
     });
 
-    let spinner = Spinner::new();
-    let mut engine = Engine::new(entry, ignore_file);
-    let now = time::Instant::now();
-    spinner.start();
-    let mut report = engine.calculate();
-
-    report.languages.sort_by(|prev, next| match sort_by {
-        SortBy::Language => compare(prev.language, next.language, order_by),
-        SortBy::Files => compare(prev.files, next.files, order_by),
-        SortBy::Size => compare(prev.bytes, next.bytes, order_by),
-        SortBy::Blank => compare(prev.blank, next.blank, order_by),
-        SortBy::Comment => compare(prev.comment, next.comment, order_by),
-        SortBy::Code => compare(prev.code, next.code, order_by),
-    });
-    let elapsed = now.elapsed();
-    spinner.stop();
-
-    match output {
-        Output::Terminal => PrettyPrinter::terminal(report, elapsed),
-        Output::Markdown => PrettyPrinter::markdown(report, elapsed),
-    }
+    let mut machine = AutomaticMachinery::new(entry, ignore_file.unwrap_or_default());
+    machine.startup();
 
     Ok(())
 }
