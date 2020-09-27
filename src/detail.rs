@@ -1,5 +1,16 @@
-use crate::engine::Report;
 use std::collections::HashMap;
+
+#[derive(Debug)]
+pub struct Report {
+    pub languages: Vec<LanguageDetail>,
+    pub sum: SumDetail,
+}
+
+impl Report {
+    pub fn new(languages: Vec<LanguageDetail>, sum: SumDetail) -> Self {
+        Self { languages, sum }
+    }
+}
 
 /// 读取单个文件, 分析后得出的详情
 #[derive(Copy, Clone, Debug)]

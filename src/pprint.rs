@@ -3,8 +3,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::time::Duration;
 
-use crate::detail::{LanguageDetail, SumDetail};
-use crate::engine::Report;
+use crate::detail::{LanguageDetail, Report, SumDetail};
 
 pub struct PrettyPrinter();
 
