@@ -12,6 +12,17 @@ pub fn compare<T: Ord>(t1: T, t2: T, order_by: OrderBy) -> Ordering {
     t1.cmp(&t2)
 }
 
+const SIZES: [&str; 9] = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+pub fn bytes_to_size(bytes: f64) -> String {
+    let k = 1024_f64;
+    if bytes <= 1_f64 {
+        return format!("{:.2} B", bytes);
+    }
+    let i = (bytes.ln() / k.ln()) as i32;
+    format!("{:.2} {}", bytes / k.powi(i), SIZES[i as usize])
+}
+
 #[cfg(test)]
 pub mod tests {
     use super::*;

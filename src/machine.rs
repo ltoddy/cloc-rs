@@ -4,6 +4,7 @@ use std::thread::spawn;
 
 use crate::calculator::Calculator;
 use crate::explorer::Explorer;
+use crate::prettyprinter::pretty_print;
 use crate::reporter::Reporter;
 
 pub struct AutomaticMachinery {
@@ -40,7 +41,8 @@ impl AutomaticMachinery {
 
         spawn(move || explorer.walk_directory(entry));
         spawn(|| calculator.serve());
-        reporter.research();
+        let report = reporter.research();
+        pretty_print(report);
     }
 
     fn read_ignore_list(filename: PathBuf) -> Vec<PathBuf> {

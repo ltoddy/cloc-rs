@@ -20,7 +20,7 @@ impl Explorer {
 
     fn walk_dir_impl(&mut self, path: &Path) {
         if path.is_file() && self.is_not_ignore_file(path) {
-            self.sender.send(PathBuf::from(path)).unwrap();
+            let _ = self.sender.send(PathBuf::from(path));
         } else if path.is_dir() {
             if let Ok(entries) = fs::read_dir(path) {
                 entries
@@ -32,11 +32,11 @@ impl Explorer {
 
     #[inline]
     fn is_not_ignore_file<P: AsRef<Path>>(&self, filename: P) -> bool {
-        !self.is_ignore_file_impl(filename.as_ref())
+        self.is_not_ignore_file_impl(filename.as_ref())
     }
 
     #[inline]
-    fn is_ignore_file_impl(&self, filename: &Path) -> bool {
-        self.ignore_list.iter().any(|path| filename.starts_with(path))
+    fn is_not_ignore_file_impl(&self, filename: &Path) -> bool {
+        self.ignore_list.iter().all(|path| !filename.starts_with(path))
     }
 }

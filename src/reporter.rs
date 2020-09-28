@@ -1,5 +1,8 @@
-use crate::calculator::Detail;
+use std::collections::HashMap;
+use std::ops::AddAssign;
 use std::sync::mpsc::Receiver;
+
+use crate::calculator::Detail;
 
 pub struct Reporter {
     receiver: Receiver<Detail>,
@@ -10,14 +13,28 @@ impl Reporter {
         Self { receiver }
     }
 
-    pub fn research(&self) {
+    pub fn research(&self) -> Report {
+        let mut kinds = HashMap::<&str, Detail>::new();
+        let mut summary = Detail::new("Sum", 0, 0, 0, 0, 0);
+
         for detail in &self.receiver {
-            println!("{:?}", detail);
+            summary += detail;
+
+            kinds
+                .entry(detail.language)
+                .and_modify(|d| d.add_assign(detail))
+                .or_insert(detail);
+        }
+
+        Report {
+            sections: kinds.values().cloned().collect::<Vec<_>>(),
+            summary,
         }
     }
 }
 
+#[derive(Debug)]
 pub struct Report {
-    section: Detail,
-    summary: Detail,
+    pub sections: Vec<Detail>,
+    pub summary: Detail,
 }

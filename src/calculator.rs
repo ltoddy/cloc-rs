@@ -1,9 +1,13 @@
+use std::collections::HashMap;
+use std::ffi::OsStr;
+use std::fs;
+use std::ops::{Add, AddAssign};
 use std::path::{Path, PathBuf};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender};
-use std::{fs, sync::Arc};
+use std::sync::Arc;
 
-use crate::config::Info;
-use crate::config::MANAGER;
+use lazy_static::lazy_static;
+
 use crate::executor::ThreadPoolExecutor;
 use crate::Result;
 
@@ -33,23 +37,21 @@ impl Calculator {
             executor,
         } = self;
 
-        let mut counter = 0;
         let sender = Arc::new(detail_sender);
 
         for filename in filename_receiver {
             let sender = Arc::clone(&sender);
             executor.submit(move || {
-                if let Some(ext) = filename.extension() {
-                    if let Some(info) = MANAGER.get_by_extension(ext) {
-                        if let Ok(detail) = Self::statistical_detail(filename, info) {
-                            let _ = sender.send(detail);
-                        }
-                    }
-                }
+                filename
+                    .extension()
+                    .and_then(|ext| MANAGER.get_by_extension(ext))
+                    .and_then(|info| Self::statistical_detail(filename, info).ok())
+                    .and_then(|detail| sender.send(detail).ok());
             });
         }
     }
 
+    #[inline]
     fn statistical_detail<P: AsRef<Path> + Sync + Send>(filename: P, info: &Info) -> Result<Detail> {
         Self::statistical_detail_impl(filename.as_ref(), info)
     }
@@ -130,27 +132,163 @@ impl Calculator {
             code += 1;
         }
 
-        Ok(Detail::new(language, bytes, blank, comment, code))
+        Ok(Detail::new(language, 1, bytes, blank, comment, code))
     }
+}
+
+#[derive(Debug, Clone)]
+struct Info {
+    language: &'static str,
+    file_ext: Vec<&'static str>,
+    single: Vec<&'static str>,
+    multi: Vec<(&'static str, &'static str)>,
+}
+
+impl Info {
+    #[inline]
+    fn new(
+        language: &'static str,
+        file_ext: Vec<&'static str>,
+        single: Vec<&'static str>,
+        multi: Vec<(&'static str, &'static str)>,
+    ) -> Self {
+        Self {
+            language,
+            file_ext,
+            single,
+            multi,
+        }
+    }
+}
+
+struct Manager {
+    languages: HashMap<&'static str, Info>,
+    ext_to_language: HashMap<&'static str, &'static str>,
+}
+
+impl Manager {
+    #[inline]
+    fn get_by_extension(&self, ext: &OsStr) -> Option<&Info> {
+        ext.to_str()
+            .and_then(|ext| self.ext_to_language.get(ext))
+            .and_then(|language| self.languages.get(language))
+    }
+}
+
+lazy_static! {
+    static ref MANAGER: Manager = {
+        let mut languages = HashMap::<&'static str, Info>::new();
+        let mut ext_to_language = HashMap::new();
+
+        macro_rules! language {
+            ($language: expr, $ext: expr, $single: expr, $multi: expr) => {{
+                languages.insert($language, Info::new($language, $ext, $single, $multi));
+                for e in $ext {
+                    ext_to_language.insert(e, $language);
+                }
+            }};
+            ($language: expr, $ext: expr, $single: expr) => {
+                language!($language, $ext, $single, vec![])
+            };
+            ($language: expr, $ext: expr) => {
+                language!($language, $ext, vec![], vec![])
+            };
+        }
+
+        language!("Bat", vec!["bat", "cmd"], vec!["@rem"]);
+        language!("C", vec!["c"], vec!["//"], vec![("/*", "*/")]);
+        language!("CHeader", vec!["h"], vec!["//"], vec![("/*", "*/")]);
+        language!("Cpp", vec!["cpp"], vec!["//"], vec![("/*", "*/")]);
+        language!("CppHeader", vec!["hpp"], vec!["//"], vec![("/*", "*/")]);
+        language!(
+            "CSS",
+            vec!["css", "sass", "less", "scss"],
+            vec!["//"],
+            vec![("/*", "*/")]
+        );
+        language!("Go", vec!["go"], vec!["//"], vec![("/*", "*/"), ("/**", "*/")]);
+        language!("Gradle", vec!["gradle"], vec!["//"], vec![("/*", "*/"), ("/**", "*/")]);
+        language!("Html", vec!["html", "xhtml", "hml"]);
+        language!("Haskell", vec!["hs"], vec!["--"], vec![("{-", "-}")]);
+        language!("Java", vec!["java"], vec!["//"], vec![("/*", "*/")]);
+        language!("JavaScript", vec!["js", "ejs"], vec!["//"], vec![("/*", "*/")]);
+        language!("Json", vec!["json"]);
+        language!("Julia", vec!["jl"], vec!["#"], vec![("#=", "=#")]);
+        language!("Markdown", vec!["md"]);
+        language!(
+            "Php",
+            vec!["php4", "php5", "php", "phtml"],
+            vec!["#", "//"],
+            vec![("/*", "*/"), ("/**", "*/")]
+        );
+        language!("Protobuf", vec!["proto"], vec!["//"]);
+        language!("Python", vec!["py"], vec!["#"], vec![("'''", "'''"), (r#"""#, r#"""#)]);
+        language!("Rust", vec!["rs"], vec!["//", "///", "///!"], vec![("/*", "*/")]);
+        language!("Ruby", vec!["rb"], vec!["#"], vec![("=", "=")]);
+        language!("Scala", vec!["scala"], vec!["//"], vec![("/*", "*/")]);
+        language!("Shell", vec!["sh"], vec!["#"]);
+        language!("Sql", vec!["sql"], vec!["#", "--"], vec![("/*", "*/")]);
+        language!("Toml", vec!["toml"], vec!["#"]);
+        language!("TypeScript", vec!["ts"], vec!["//"], vec![("/*", "*/")]);
+        language!(
+            "Xml",
+            vec!["xml"],
+            vec!["!there is no specific single line comment!"],
+            vec![("<!--", "-->"), ("<![CDATA[", "]]>")]
+        );
+        language!("Yaml", vec!["yml", "yaml"], vec!["#"]);
+
+        Manager {
+            languages,
+            ext_to_language,
+        }
+    };
 }
 
 #[derive(Debug, Copy, Clone)]
 pub struct Detail {
-    language: &'static str,
-    size: u64,
-    blank: usize,
-    comment: usize,
-    code: usize,
+    pub language: &'static str,
+    pub files: usize,
+    pub bytes: u64,
+    pub blank: usize,
+    pub comment: usize,
+    pub code: usize,
 }
 
 impl Detail {
-    pub fn new(language: &'static str, size: u64, blank: usize, comment: usize, code: usize) -> Self {
+    pub fn new(language: &'static str, files: usize, bytes: u64, blank: usize, comment: usize, code: usize) -> Self {
         Self {
             language,
-            size,
+            files,
+            bytes,
             blank,
             comment,
             code,
         }
+    }
+}
+
+impl Add for Detail {
+    type Output = Detail;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Self {
+            language: self.language,
+            files: self.files + rhs.files,
+            bytes: self.bytes + rhs.bytes,
+            blank: self.blank + rhs.blank,
+            comment: self.comment + rhs.comment,
+            code: self.code + rhs.comment,
+        }
+    }
+}
+
+impl AddAssign for Detail {
+    fn add_assign(&mut self, rhs: Self) {
+        self.files += rhs.files;
+        self.bytes += rhs.bytes;
+        self.blank += rhs.blank;
+        self.comment += rhs.comment;
+        self.code += rhs.code;
     }
 }

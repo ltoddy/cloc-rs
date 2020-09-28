@@ -1,18 +1,16 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
-#![allow(unused_mut)]
 
 mod calculator;
-mod config;
 mod detail;
 mod error;
 mod executor;
 mod explorer;
 mod machine;
 mod macros;
-mod message;
 mod options;
 mod pprint;
+mod prettyprinter;
 mod reporter;
 mod spinner;
 mod util;
@@ -28,12 +26,6 @@ use crate::options::Options;
 type Result<T> = std::result::Result<T, crate::error::Error>;
 
 fn main() {
-    if let Err(e) = run() {
-        eprintln!("{}", e)
-    }
-}
-
-fn run() -> Result<()> {
     let opt: Options = Options::from_args();
     let Options {
         output,
@@ -48,8 +40,6 @@ fn run() -> Result<()> {
         current_dir().expect("current directory does not exist")
     });
 
-    let mut machine = AutomaticMachinery::new(entry, ignore_file.unwrap_or_default());
+    let machine = AutomaticMachinery::new(entry, ignore_file.unwrap_or_default());
     machine.startup();
-
-    Ok(())
 }
