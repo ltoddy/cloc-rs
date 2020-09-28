@@ -1,43 +1,35 @@
-mod calculate;
-mod config;
-mod detail;
-mod engine;
+mod calculator;
 mod error;
 mod executor;
-mod macros;
+mod explorer;
+mod engine;
 mod options;
-mod pprint;
+mod prettyprinter;
+mod reporter;
 mod spinner;
 mod util;
 
 use std::env::current_dir;
 use std::fs;
-use std::time;
+use std::time::Instant;
 
 use structopt::StructOpt;
 
 use crate::engine::Engine;
-use crate::options::{Options, Output, SortBy};
-use crate::pprint::PrettyPrinter;
-use crate::spinner::Spinner;
+use crate::options::{Options, SortBy};
+use crate::prettyprinter::pretty_print;
 use crate::util::compare;
 
 type Result<T> = std::result::Result<T, crate::error::Error>;
 
 fn main() {
-    if let Err(e) = run() {
-        eprintln!("{}", e)
-    }
-}
-
-fn run() -> Result<()> {
     let opt: Options = Options::from_args();
     let Options {
-        output,
         sort_by,
         order_by,
         entry,
         ignore_file,
+        ..
     } = opt;
 
     let entry = entry.and_then(|entry| fs::canonicalize(entry).ok()).unwrap_or_else(|| {
@@ -45,13 +37,10 @@ fn run() -> Result<()> {
         current_dir().expect("current directory does not exist")
     });
 
-    let spinner = Spinner::new();
-    let mut engine = Engine::new(entry, ignore_file);
-    let now = time::Instant::now();
-    spinner.start();
-    let mut report = engine.calculate();
-
-    report.languages.sort_by(|prev, next| match sort_by {
+    let now = Instant::now();
+    let machine = Engine::new(entry, ignore_file.unwrap_or_default());
+    let mut report = machine.serve();
+    report.sections.sort_by(|prev, next| match sort_by {
         SortBy::Language => compare(prev.language, next.language, order_by),
         SortBy::Files => compare(prev.files, next.files, order_by),
         SortBy::Size => compare(prev.bytes, next.bytes, order_by),
@@ -59,13 +48,8 @@ fn run() -> Result<()> {
         SortBy::Comment => compare(prev.comment, next.comment, order_by),
         SortBy::Code => compare(prev.code, next.code, order_by),
     });
+
     let elapsed = now.elapsed();
-    spinner.stop();
 
-    match output {
-        Output::Terminal => PrettyPrinter::terminal(report, elapsed),
-        Output::Markdown => PrettyPrinter::markdown(report, elapsed),
-    }
-
-    Ok(())
+    pretty_print(report, elapsed);
 }

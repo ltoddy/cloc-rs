@@ -1,6 +1,6 @@
 [package]
 name = "cloc"
-version = "0.6.0"
+version = "0.6.1"
 authors = ["ltoddy <taoliu0509@gmail.com>"]
 edition = "2018"
 license = "MIT"
@@ -19,6 +19,7 @@ include = [
 [dependencies]
 structopt = "0.3"
 num_cpus = "1.0"
+lazy_static = "1.4"
 
 [profile.release]
 opt-level = 'z'
