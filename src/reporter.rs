@@ -22,12 +22,12 @@ impl Reporter {
 
             kinds
                 .entry(detail.language)
-                .and_modify(|d| d.add_assign(detail))
+                .and_modify(|acc| acc.add_assign(detail))
                 .or_insert(detail);
         }
 
         Report {
-            sections: kinds.values().cloned().collect::<Vec<_>>(),
+            sections: kinds.into_iter().map(|(_, value)| value).collect(),
             summary,
         }
     }

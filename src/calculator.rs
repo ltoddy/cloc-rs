@@ -30,7 +30,7 @@ impl Calculator {
         (calculator, detail_receiver)
     }
 
-    pub fn serve(self) {
+    pub fn calculate(self) {
         let Calculator {
             filename_receiver,
             detail_sender,
@@ -136,7 +136,7 @@ impl Calculator {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct Info {
     language: &'static str,
     file_ext: Vec<&'static str>,

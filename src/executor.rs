@@ -37,7 +37,6 @@ impl Worker {
 pub struct ThreadPoolExecutor {
     workers: Vec<Worker>,
     sender: SyncSender<Message>,
-    capacity: usize,
 }
 
 impl ThreadPoolExecutor {
@@ -56,15 +55,7 @@ impl ThreadPoolExecutor {
             workers.push(Worker::new(Arc::clone(&receiver)));
         }
 
-        Self {
-            workers,
-            sender,
-            capacity,
-        }
-    }
-
-    pub fn capacity(&self) -> usize {
-        self.capacity
+        Self { workers, sender }
     }
 
     pub fn submit<F>(&self, f: F)

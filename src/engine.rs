@@ -4,10 +4,10 @@ use std::thread::spawn;
 
 use crate::calculator::Calculator;
 use crate::explorer::Explorer;
-use crate::prettyprinter::pretty_print;
-use crate::reporter::Reporter;
+use crate::reporter::{Report, Reporter};
+use crate::spinner::Spinner;
 
-pub struct AutomaticMachinery {
+pub struct Engine {
     entry: PathBuf,
 
     explorer: Explorer,
@@ -15,7 +15,7 @@ pub struct AutomaticMachinery {
     reporter: Reporter,
 }
 
-impl AutomaticMachinery {
+impl Engine {
     pub fn new(entry: PathBuf, ignore_file: PathBuf) -> Self {
         let ignore_list = Self::read_ignore_list(ignore_file);
 
@@ -31,18 +31,22 @@ impl AutomaticMachinery {
         }
     }
 
-    pub fn startup(self) {
+    pub fn serve(self) -> Report {
         let Self {
             entry,
             mut explorer,
             calculator,
             reporter,
         } = self;
+        let spinner = Spinner::new();
 
+        spinner.start();
         spawn(move || explorer.walk_directory(entry));
-        spawn(|| calculator.serve());
+        spawn(|| calculator.calculate());
         let report = reporter.research();
-        pretty_print(report);
+        spinner.stop();
+
+        report
     }
 
     fn read_ignore_list(filename: PathBuf) -> Vec<PathBuf> {
@@ -53,6 +57,6 @@ impl AutomaticMachinery {
                     .filter_map(|path| fs::canonicalize(path).ok())
                     .collect::<Vec<_>>()
             })
-            .unwrap_or(Vec::new())
+            .unwrap_or_default()
     }
 }

@@ -1,9 +1,12 @@
+use std::time::Duration;
+
 use crate::reporter::Report;
 use crate::util::bytes_to_size;
 
-pub fn pretty_print(report: Report) -> () {
+pub fn pretty_print(report: Report, elapsed: Duration) {
     let Report { sections, summary } = report;
 
+    println!("{:>12.4} secs", elapsed.as_secs_f64());
     println!("┌────────────────────────────────────────────────────────────────────────┐");
     println!(
         "| {:<10}{:>12}{:>12}{:>12}{:>12}{:>12} |",
