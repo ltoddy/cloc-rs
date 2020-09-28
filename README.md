@@ -56,7 +56,7 @@ $ cargo install --path .
 
 ### How to contribute(support for more language)
 
-- 在`src/config.rs`文件中, `Config`结构体的`default`方法中, 使用`language!`宏来定义规则.
+- 在`src/calculator.rs`文件中, 有一个在`lazy_static`中的全局变量: `MANAGER`,内部有一个宏
 
 > language!($name, $ext, $single, $multi)
 
