@@ -1,15 +1,17 @@
 use std::fs;
 use std::path::PathBuf;
+use std::thread::spawn;
 
 use crate::calculator::Calculator;
 use crate::explorer::Explorer;
-use std::thread::spawn;
+use crate::reporter::Reporter;
 
 pub struct AutomaticMachinery {
     entry: PathBuf,
 
     explorer: Explorer,
     calculator: Calculator,
+    reporter: Reporter,
 }
 
 impl AutomaticMachinery {
@@ -18,11 +20,13 @@ impl AutomaticMachinery {
 
         let (explorer, filename_receiver) = Explorer::new(ignore_list);
         let (calculator, detail_receiver) = Calculator::new(filename_receiver);
+        let reporter = Reporter::new(detail_receiver);
 
         Self {
             entry,
             explorer,
             calculator,
+            reporter,
         }
     }
 
@@ -31,10 +35,12 @@ impl AutomaticMachinery {
             entry,
             mut explorer,
             calculator,
+            reporter,
         } = self;
 
         spawn(move || explorer.walk_directory(entry));
-        calculator.serve();
+        spawn(|| calculator.serve());
+        reporter.research();
     }
 
     fn read_ignore_list(filename: PathBuf) -> Vec<PathBuf> {

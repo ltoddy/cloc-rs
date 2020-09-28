@@ -1,8 +1,6 @@
-use std::fs;
-use std::iter;
 use std::path::{Path, PathBuf};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender};
-use std::sync::RwLock;
+use std::{fs, sync::Arc};
 
 use crate::config::Info;
 use crate::config::MANAGER;
@@ -36,14 +34,15 @@ impl Calculator {
         } = self;
 
         let mut counter = 0;
-        let detail_senders = RwLock::new(iter::repeat(detail_sender).take(num_cpus::get()).collect::<Vec<_>>());
+        let sender = Arc::new(detail_sender);
 
         for filename in filename_receiver {
+            let sender = Arc::clone(&sender);
             executor.submit(move || {
                 if let Some(ext) = filename.extension() {
                     if let Some(info) = MANAGER.get_by_extension(ext) {
                         if let Ok(detail) = Self::statistical_detail(filename, info) {
-                            println!("detail: {:?}", detail);
+                            let _ = sender.send(detail);
                         }
                     }
                 }

@@ -1,4 +1,4 @@
-use crate::detail::Detail;
+use crate::calculator::Detail;
 use std::sync::mpsc::Receiver;
 
 pub struct Reporter {
@@ -10,9 +10,11 @@ impl Reporter {
         Self { receiver }
     }
 
-    // pub fn research(&self) -> Reporter {
-    //
-    // }
+    pub fn research(&self) {
+        for detail in &self.receiver {
+            println!("{:?}", detail);
+        }
+    }
 }
 
 pub struct Report {
