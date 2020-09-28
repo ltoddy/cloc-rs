@@ -4,35 +4,40 @@ Count, or compute differences of, lines of source code and comments.
 
 ## Overview
 
-```
-                                    --> calculate -\
-walk directory --> channel<PathBuf> --> calculate --> sum
-                                    --> calculate -/
-```
+![](https://img.vim-cn.com/1b/5f012cb8f2e45001ae20d18310ec0da474fff3.jpg)
 
 ### Usage
 
 e.g.
 
 ```
-ltoddy@linuxbox:~/.cargo/registry/src$ cloc github.com-1ecc6299db9ec823 --sort-by=code
-      0.5971 secs
+macbox :: src/github.com-1ecc6299db9ec823 » cloc .
+      0.8915 secs
 ┌────────────────────────────────────────────────────────────────────────┐
-| Language         files        Size       Blank     Comment        Code |
+| Language         files        size       blank     comment        code |
 ├────────────────────────────────────────────────────────────────────────┤
-| Html                 3    622.00 B           1           0          19 |
-| CSS                  3     1.56 KB          15           6          54 |
-| Ruby                 1     1.41 KB           8           2          68 |
-| Python              21   120.17 KB         556        2031        1049 |
-| Cpp                  9    79.25 KB         190          42        1830 |
-| Shell               96   289.45 KB        1169        1728        7523 |
-| Json               222   410.30 KB           0           0       17563 |
-| CHeader            242  1018.47 KB        3655        8764       20101 |
-| Markdown           381     1.59 MB       11747           0       30570 |
-| C                  257     2.46 MB       11613        8589       70725 |
-| Rust              4861    59.06 MB      128216      245762     1476442 |
+| Bat                 25    69.00 KB         321           0        2127 |
+| C                 2022    31.11 MB      171915      146101      806618 |
+| CHeader           1684    12.19 MB       42874      131952      156036 |
+| CSS                 24   169.76 KB         271          92        1414 |
+| Cpp                 89     1.19 MB        4571        4242       28867 |
+| CppHeader           73   345.98 KB        1673        1707        7456 |
+| Go                   5   137.84 KB         605         447        3911 |
+| Haskell              1     74.00 B           1           0           3 |
+| Html               252     1.55 MB         987           0       63786 |
+| JavaScript         294     1.41 MB        4375        2208       19874 |
+| Json              1090     1.29 MB           3           0       33999 |
+| Markdown          2930    10.59 MB       78502           0      208939 |
+| Protobuf             1     1.10 KB           2           0          28 |
+| Python              95   865.36 KB        4095       10216       15230 |
+| Ruby               175   594.49 KB        3501        3603       18335 |
+| Rust             34286   306.20 MB      749237     1305784     7270348 |
+| Shell              270     1.11 MB        5060        6647       28384 |
+| Toml              1640     2.18 MB        8957       14968       54014 |
+| Xml                236     1.23 MB        2852        1681       22814 |
+| Yaml              1256     1.36 MB        4238        2892       43028 |
 ├────────────────────────────────────────────────────────────────────────┤
-| Sum               6096    64.99 MB      157170      266924     1625944 |
+| Sum              46448   373.54 MB     1084040     1632540     8785211 |
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -71,4 +76,5 @@ $ cargo install --path .
 - [ ] 完善测试
 - [ ] 完善文档
 - [ ] CI加上`cargo clippy --release -- -D clippy::all`限制
+- [ ] 压榨性能
 - [ ] ...
