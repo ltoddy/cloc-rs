@@ -3,12 +3,12 @@ use std::path::{Path, PathBuf};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender};
 
 pub struct Explorer {
-    ignore_list: Vec<PathBuf>,
+    ignore_list: Option<Vec<PathBuf>>,
     sender: SyncSender<PathBuf>,
 }
 
 impl Explorer {
-    pub fn new(ignore_list: Vec<PathBuf>) -> (Self, Receiver<PathBuf>) {
+    pub fn new(ignore_list: Option<Vec<PathBuf>>) -> (Self, Receiver<PathBuf>) {
         let (sender, receiver) = sync_channel::<PathBuf>(128);
         let explorer = Self { ignore_list, sender };
         (explorer, receiver)
@@ -37,6 +37,10 @@ impl Explorer {
 
     #[inline]
     fn is_not_ignore_file_impl(&self, filename: &Path) -> bool {
-        self.ignore_list.iter().all(|path| !filename.starts_with(path))
+        if let Some(ignore_list) = &self.ignore_list {
+            return ignore_list.iter().all(|path| !filename.starts_with(path));
+        }
+
+        true
     }
 }

@@ -1,10 +1,10 @@
 mod calculator;
+mod engine;
 mod error;
 mod executor;
 mod explorer;
-mod engine;
 mod options;
-mod prettyprinter;
+mod pretty_printer;
 mod reporter;
 mod spinner;
 mod util;
@@ -17,7 +17,7 @@ use structopt::StructOpt;
 
 use crate::engine::Engine;
 use crate::options::{Options, SortBy};
-use crate::prettyprinter::pretty_print;
+use crate::pretty_printer::pretty_print;
 use crate::util::compare;
 
 type Result<T> = std::result::Result<T, crate::error::Error>;
@@ -38,7 +38,7 @@ fn main() {
     });
 
     let now = Instant::now();
-    let machine = Engine::new(entry, ignore_file.unwrap_or_default());
+    let machine = Engine::new(entry, ignore_file);
     let mut report = machine.serve();
     report.sections.sort_by(|prev, next| match sort_by {
         SortBy::Language => compare(prev.language, next.language, order_by),

@@ -16,7 +16,7 @@ pub struct Engine {
 }
 
 impl Engine {
-    pub fn new(entry: PathBuf, ignore_file: PathBuf) -> Self {
+    pub fn new(entry: PathBuf, ignore_file: Option<PathBuf>) -> Self {
         let ignore_list = Self::read_ignore_list(ignore_file);
 
         let (explorer, filename_receiver) = Explorer::new(ignore_list);
@@ -49,14 +49,14 @@ impl Engine {
         report
     }
 
-    fn read_ignore_list(filename: PathBuf) -> Vec<PathBuf> {
-        fs::read_to_string(filename)
+    fn read_ignore_list(filename: Option<PathBuf>) -> Option<Vec<PathBuf>> {
+        filename
+            .and_then(|filename| fs::read_to_string(filename).ok())
             .map(|content| {
                 content
                     .lines()
                     .filter_map(|path| fs::canonicalize(path).ok())
                     .collect::<Vec<_>>()
             })
-            .unwrap_or_default()
     }
 }
