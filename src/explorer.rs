@@ -9,7 +9,7 @@ pub struct Explorer {
 
 impl Explorer {
     pub fn new(ignore_list: Option<Vec<PathBuf>>) -> (Self, Receiver<PathBuf>) {
-        let (sender, receiver) = sync_channel::<PathBuf>(128);
+        let (sender, receiver) = sync_channel::<PathBuf>(1024);
         let explorer = Self { ignore_list, sender };
         (explorer, receiver)
     }

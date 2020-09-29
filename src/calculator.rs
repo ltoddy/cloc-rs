@@ -4,7 +4,6 @@ use std::fs;
 use std::ops::{Add, AddAssign};
 use std::path::{Path, PathBuf};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender};
-use std::sync::Arc;
 
 use lazy_static::lazy_static;
 
@@ -37,10 +36,8 @@ impl Calculator {
             executor,
         } = self;
 
-        let sender = Arc::new(detail_sender);
-
         for filename in filename_receiver {
-            let sender = Arc::clone(&sender);
+            let sender = SyncSender::clone(&detail_sender);
             executor.submit(move || {
                 filename
                     .extension()
