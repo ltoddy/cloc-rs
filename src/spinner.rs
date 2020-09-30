@@ -1,3 +1,4 @@
+#![allow(clippy::mutex_atomic)]
 use std::io::prelude::*;
 use std::io::stdout;
 use std::sync::{Arc, Condvar, Mutex};

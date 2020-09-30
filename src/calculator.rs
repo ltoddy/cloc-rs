@@ -54,12 +54,8 @@ impl Calculator {
     }
 
     fn statistical_detail_impl(filename: &Path, info: &Info) -> Result<Detail> {
-        let Info {
-            language,
-            single,
-            multi,
-            ..
-        } = info;
+        #[rustfmt::skip]
+        let Info { language, single, multi, .. } = info;
 
         let content = fs::read_to_string(&filename)?;
         let metadata = filename.metadata()?;
@@ -142,19 +138,10 @@ struct Info {
 }
 
 impl Info {
+    #[rustfmt::skip]
     #[inline]
-    fn new(
-        language: &'static str,
-        file_ext: Vec<&'static str>,
-        single: Vec<&'static str>,
-        multi: Vec<(&'static str, &'static str)>,
-    ) -> Self {
-        Self {
-            language,
-            file_ext,
-            single,
-            multi,
-        }
+    fn new(language: &'static str, file_ext: Vec<&'static str>, single: Vec<&'static str>, multi: Vec<(&'static str, &'static str)>) -> Self {
+        Self { language, file_ext, single, multi }
     }
 }
 
@@ -172,6 +159,7 @@ impl Manager {
     }
 }
 
+#[rustfmt::skip]
 lazy_static! {
     static ref MANAGER: Manager = {
         let mut languages = HashMap::<&'static str, Info>::new();
@@ -192,53 +180,123 @@ lazy_static! {
             };
         }
 
-        language!("Bat", vec!["bat", "cmd"], vec!["@rem"]);
+        language!("ABAP", vec!["abap"], vec!["*", "\\\""]);
+        language!("ABNF", vec!["abnf"], vec![";"]);
+        language!("ActionScript", vec!["as"], vec!["//"], vec![("/*", "*/")]);
+        language!("Ada", vec!["ada", "adb", "ads", "pad"], vec!["--"]);
+        language!("Agda", vec!["agda"], vec!["--"], vec![("{-", "-}")]);
+        language!("Alloy", vec!["als"], vec!["--", "//"], vec![("/*", "*/")]);
+        language!("Arduino C++", vec!["ino"], vec!["//"], vec![("/*", "*/")]);
+        language!("Assembly", vec!["asm"], vec![";"]);
+        language!("GNU Style Assembly", vec!["s"], vec!["//"], vec![("/*", "*/")]);
+        language!("ASP", vec!["asa", "asp"], vec!["'", "REM"]);
+        language!("ASP.NET", vec!["asax", "ascx", "asmx", "aspx", "master", "sitemap", "webinfo"], vec![], vec![("<!--", "-->"), ("<%--", "-->")]);
+        language!("Autoconf", vec!["in"], vec!["#", "dnl"]);
+        language!("Automake", vec!["am"], vec!["#"]);
+        language!("Bash", vec!["bash"], vec!["#"]);
+        language!("Batch", vec!["bat", "btm", "cmd"], vec!["REM", "::"]);
+        language!("Cabal", vec!["cabal"], vec!["--"], vec![("{-", "-}")]);
         language!("C", vec!["c"], vec!["//"], vec![("/*", "*/")]);
-        language!("CHeader", vec!["h"], vec!["//"], vec![("/*", "*/")]);
-        language!("Cpp", vec!["cpp"], vec!["//"], vec![("/*", "*/")]);
-        language!("CppHeader", vec!["hpp"], vec!["//"], vec![("/*", "*/")]);
-        language!(
-            "CSS",
-            vec!["css", "sass", "less", "scss"],
-            vec!["//"],
-            vec![("/*", "*/")]
-        );
+        language!("Ceylon", vec!["ceylon"], vec!["//"], vec![("/*", "*/")]);
+        language!("C Header", vec!["h"], vec!["//"], vec![("/*", "*/")]);
+        language!("Clojure", vec!["clj"], vec![";"]);
+        language!("ClojureScript", vec!["cljs"], vec![";"]);
+        language!("ClojureC", vec!["cljc"], vec![";"]);
+        language!("CMake", vec!["cmake"], vec!["#"]);
+        language!("Cobol", vec!["cob", "cbl", "ccp", "cobol", "cpy"], vec!["*"]);
+        language!("CoffeeScript", vec!["coffee", "cjsx"], vec!["#"], vec![("###", "###")]);
+        language!("Coq", vec!["v"], vec![], vec![("(*", "*)")]);
+        language!("C++", vec!["cc", "cpp", "cxx", "c++", "pcc", "tpp"], vec!["//"], vec![("/*", "*/")]);
+        language!("C++ Header", vec!["hh", "hpp", "hxx", "inl", "ipp"], vec!["//"], vec![("/*", "*/")]);
+        language!("Crystal", vec!["crystal"], vec!["#"]);
+        language!("C#", vec!["cs", "csx"], vec!["//"], vec![("/*", "*/")]);
+        language!("CSS", vec!["css"], vec!["//"], vec![("/*", "*/")]);
+        language!("D", vec!["d"], vec!["//"], vec![("/*", "*/")]);
+        language!("DAML", vec!["daml"], vec!["--"], vec![("{-", "-}")]);
+        language!("dart", vec!["dart"], vec!["//"], vec![("/*", "*/")]);
+        language!("Emacs Lisp", vec!["el"], vec![";"]);
+        language!("Elixir", vec!["ex", "exs"], vec!["#"]);
+        language!("Elm", vec!["elm"], vec!["--"], vec![("{-", "-}")]);
+        language!("Erlang", vec!["erl", "hrl"], vec!["%"]);
+        language!("FreeMarker", vec!["ftl", "ftlh", "ftlx"], vec![], vec![("<#--", "-->")]);
+        language!("F#", vec!["fs", "fsi", "fsx", "fsscript"], vec!["//"], vec![("(*", "*)")]);
         language!("Go", vec!["go"], vec!["//"], vec![("/*", "*/"), ("/**", "*/")]);
+        language!("Go HTML", vec!["gohtml"], vec![], vec![("<!--", "-->"), ("{{/*", "*/}}")]);
+        language!("GraphQL", vec!["gql", "graphql"], vec!["#"]);
+        language!("Groovy", vec!["groovy", "grt", "gtpl", "gvy"], vec!["//"], vec![("/*", "*/")]);
         language!("Gradle", vec!["gradle"], vec!["//"], vec![("/*", "*/"), ("/**", "*/")]);
-        language!("Html", vec!["html", "xhtml", "hml"]);
         language!("Haskell", vec!["hs"], vec!["--"], vec![("{-", "-}")]);
+        language!("Haxe", vec!["hx"], vec!["//"], vec![("/*", "*/")]);
+        language!("Html", vec!["html", "xhtml", "hml"], vec![], vec![("<!--", "-->")]);
+        language!("Idris", vec!["idr", "lidr"], vec!["--"], vec![("{-", "-}")]);
+        language!("Ini", vec!["ini"], vec![";", "#"]);
         language!("Java", vec!["java"], vec!["//"], vec![("/*", "*/")]);
-        language!("JavaScript", vec!["js", "ejs"], vec!["//"], vec![("/*", "*/")]);
-        language!("Json", vec!["json"]);
+        language!("JavaScript", vec!["js", "mjs"], vec!["//"], vec![("/*", "*/")]);
+        language!("JSON", vec!["json"]);
+        language!("JSX", vec!["jsx"], vec!["//"], vec![("/*", "*/")]);
         language!("Julia", vec!["jl"], vec!["#"], vec![("#=", "=#")]);
-        language!("Markdown", vec!["md"]);
-        language!(
-            "Php",
-            vec!["php4", "php5", "php", "phtml"],
-            vec!["#", "//"],
-            vec![("/*", "*/"), ("/**", "*/")]
-        );
-        language!("Protobuf", vec!["proto"], vec!["//"]);
+        language!("Jupyter Notebooks", vec!["ipynb"]);
+        language!("Kotlin", vec!["kt", "kts"], vec!["//"], vec![("/*", "*/")]);
+        language!("Less", vec!["less"], vec!["//"], vec![("/*", "*/")]);
+        language!("LLVM", vec!["ll"], vec![";"]);
+        language!("Lua", vec!["lua"], vec!["--"], vec![("--[[", "]]")]);
+        language!("Lucius", vec!["lucius"], vec!["//"], vec![("/*", "*/")]);
+        language!("Markdown", vec!["md", "markdown"]);
+        language!("Mint", vec!["mint"]);
+        language!("Nim", vec!["nim"], vec!["#"]);
+        language!("Nix", vec!["nix"], vec![], vec![("/*", "*/")]);
+        language!("Objective-C", vec!["m"], vec!["//"], vec![("/*", "*/")]);
+        language!("Objective-C++", vec!["mm"], vec!["//"], vec![("/*", "*/")]);
+        language!("OCaml", vec!["ml", "mli", "re", "rei"], vec![], vec![("/*", "*/")]);
+        language!("Org", vec!["org"], vec!["#"]);
+        language!("Pascal", vec!["pas", "pp"], vec!["//"], vec![("{", "}"), ("(*", "*)")]);
+        language!("Perl", vec!["pl", "pm"], vec!["#"], vec![("=pod", "=cut")]);
+        language!("Pest", vec!["pest"], vec!["//"]);
+        language!("Plain Text", vec!["text", "txt"]);
+        language!("Php", vec!["php4", "php5", "php", "phtml"], vec!["#", "//"], vec![("/*", "*/"), ("/**", "*/")]);
+        language!("PostCSS", vec!["pcss", "sss"], vec!["//"], vec![("/*", "*/")]);
+        language!("Prolog", vec!["p", "pro"], vec!["%"]);
+        language!("Protocol Buffer", vec!["proto"], vec!["//"]);
+        language!("PowerShell", vec!["ps1", "psm1", "psd1", "ps1xml", "cdxml", "pssc", "psc1"], vec!["#"], vec![("<#", "#>")]);
+        language!("PureScript", vec!["purs"], vec!["--"], vec![("{-", "-}")]);
         language!("Python", vec!["py"], vec!["#"], vec![("'''", "'''"), (r#"""#, r#"""#)]);
+        language!("QCL", vec!["qcl"], vec!["//"], vec![("/*", "*/")]);
+        language!("R", vec!["r"], vec!["#"]);
+        language!("Racket", vec!["rkt"], vec![";"], vec![("#|", "|#")]);
+        language!("Rakefile", vec!["rake"], vec!["#"], vec![("=begin", "=end")]);
+        language!("Rakudo", vec!["pl6", "pm6"], vec!["#"], vec![("=begin", "=end")]);
         language!("Rust", vec!["rs"], vec!["//", "///", "///!"], vec![("/*", "*/")]);
-        language!("Ruby", vec!["rb"], vec!["#"], vec![("=", "=")]);
-        language!("Scala", vec!["scala"], vec!["//"], vec![("/*", "*/")]);
+        language!("Ruby", vec!["rb"], vec!["#"], vec![("=begin", "=end")]);
+        language!("Ruby HTML", vec!["erb", "rhtml"], vec![], vec![("<!--", "-->")]);
+        language!("ReStructuredText", vec!["rst"]);
+        language!("Sass", vec!["sass", "scss"], vec!["//"], vec![("/*", "*/")]);
+        language!("Scala", vec!["scala", "sc"], vec!["//"], vec![("/*", "*/")]);
+        language!("Scheme", vec!["scm", "ss"], vec![";"], vec![("#|", "|#")]);
         language!("Shell", vec!["sh"], vec!["#"]);
-        language!("Sql", vec!["sql"], vec!["#", "--"], vec![("/*", "*/")]);
+        language!("Solidity", vec!["sol"], vec!["//"], vec![("/*", "*/")]);
+        language!("SQL", vec!["sql"], vec!["#", "--"], vec![("/*", "*/")]);
+        language!("Stylus", vec!["styl"], vec!["//"], vec![("/*", "*/")]);
+        language!("SVG", vec!["svg"], vec![], vec![("<!--", "-->")]);
+        language!("Swift", vec!["swift"], vec!["//"], vec![("/*", "*/")]);
+        language!("TCL", vec!["tcl"], vec!["#"]);
+        language!("TeX", vec!["tex", "sty"], vec!["%"]);
+        language!("Thrift", vec!["thrift"], vec!["#", "//"], vec![("/*", "*/")]);
         language!("Toml", vec!["toml"], vec!["#"]);
+        language!("TSX", vec!["tsx"], vec!["//"], vec![("/*", "*/")]);
         language!("TypeScript", vec!["ts"], vec!["//"], vec![("/*", "*/")]);
-        language!(
-            "Xml",
-            vec!["xml"],
-            vec!["!there is no specific single line comment!"],
-            vec![("<!--", "-->"), ("<![CDATA[", "]]>")]
-        );
+        language!("VBScript", vec!["vbs"], vec!["'", "REM"]);
+        language!("Visual Basic", vec!["vb"], vec!["'"]);
+        language!("Visual Studio Solution", vec!["sln"]);
+        language!("Visual Studio Project", vec!["vcproj", "vcxproj"], vec![], vec![("<!--", "-->")]);
+        language!("Vim script", vec!["vim"], vec!["\\\""], vec![("\\\"", "\\\""), ("'", "'")]);
+        language!("Vue", vec!["vue"], vec!["//"], vec![("<!--", "-->"), ("/*", "*/")]);
+        language!("WebAssembly", vec!["wat", "wast"], vec![";;"]);
+        language!("XML", vec!["xml"], vec![], vec![("<!--", "-->"), ("<![CDATA[", "]]>")]);
         language!("Yaml", vec!["yml", "yaml"], vec!["#"]);
+        language!("Zig", vec!["zig"], vec!["//"]);
+        language!("Zsh", vec!["zsh"], vec!["#"]);
 
-        Manager {
-            languages,
-            ext_to_language,
-        }
+        Manager { languages, ext_to_language }
     };
 }
 
