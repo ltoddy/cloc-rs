@@ -23,21 +23,17 @@ use crate::util::compare;
 type Result<T> = std::result::Result<T, crate::error::Error>;
 
 fn main() {
+    let now = Instant::now();
+
     let opt: Options = Options::from_args();
-    let Options {
-        sort_by,
-        order_by,
-        entry,
-        ignore_file,
-        ..
-    } = opt;
+    #[rustfmt::skip]
+    let Options { sort_by, order_by, entry, ignore_file, .. } = opt;
 
     let entry = entry.and_then(|entry| fs::canonicalize(entry).ok()).unwrap_or_else(|| {
         eprintln!("No directory specified, so use current directory as entry.\n");
         current_dir().expect("current directory does not exist")
     });
 
-    let now = Instant::now();
     let machine = Engine::new(entry, ignore_file);
     let mut report = machine.serve();
     report.sections.sort_by(|prev, next| match sort_by {
