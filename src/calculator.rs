@@ -1,3 +1,4 @@
+#![allow(clippy::useless_vec)]
 use std::collections::HashMap;
 use std::ffi::OsStr;
 use std::fs;
@@ -160,6 +161,7 @@ impl Manager {
 }
 
 #[rustfmt::skip]
+
 lazy_static! {
     static ref MANAGER: Manager = {
         let mut languages = HashMap::<&'static str, Info>::new();

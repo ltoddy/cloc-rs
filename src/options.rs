@@ -72,8 +72,12 @@ impl FromStr for OrderBy {
 
 #[derive(StructOpt, Debug)]
 #[structopt(
-    name = "cloc - Count, or compute differences of, lines of source code and comments",
-    author = "ltoddy - toddy.liu@outlook.com"
+    name = "cloc",
+    author = "ltoddy - taoliu0509@gmail.com",
+    about = r#"
+        Count, or compute differences of, lines of source code and comments
+        Contribute this project on Github: https://github.com/ltoddy/cloc-rs
+    "#
 )]
 pub struct Options {
     #[structopt(

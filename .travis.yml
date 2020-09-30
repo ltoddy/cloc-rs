@@ -18,5 +18,4 @@ script:
   - cargo fmt --all -- --check `find src -iname "*.rs"`
   - cargo build --verbose --all
   - cargo test --verbose --all
-# TODO:
-#  - cargo clippy --release -- -D clippy::all
+  - cargo clippy --verbose --release -- -D clippy::all
