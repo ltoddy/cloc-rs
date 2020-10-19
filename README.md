@@ -1,6 +1,6 @@
 # cloc-rs
 
-Count, or compute differences of, lines of source code and comments.
+Count, or compute differences of, lines of source code and comments fastly.
 
 ## Overview
 
@@ -11,63 +11,34 @@ Count, or compute differences of, lines of source code and comments.
 e.g.
 
 ```
-macbox :: src/github.com-1ecc6299db9ec823 » cloc . --sort-by code
-      0.9228 secs
+macbox :: github/kubernetes » time cloc .
+     72.5313 secs
 ┌───────────────────────────────────────────────────────────────────────────────────────┐
-| Language                        files        size       blank     comment        code |
+│ Language                        files        size       blank     comment        code │
 ├───────────────────────────────────────────────────────────────────────────────────────┤
-| Vue                                 1     31.00 B           0           0           2 |
-| Haskell                             1     74.00 B           1           0           3 |
-| Vim script                          3    168.00 B           0           0           3 |
-| Sass                                2    189.00 B           2           0          11 |
-| Protocol Buffer                     1     1.10 KB           2           0          28 |
-| Prolog                              1    975.00 B          10           0          33 |
-| Ini                                 5    577.00 B           5           1          35 |
-| R                                   2     1.95 KB           6           0          40 |
-| Emacs Lisp                          2     3.17 KB           6          36          40 |
-| Zsh                                 2     5.21 KB          13          28          72 |
-| PowerShell                          4     4.89 KB          35          36          78 |
-| VBScript                            1    16.23 KB          30          60         341 |
-| C#                                  4    19.89 KB          94         108         462 |
-| Pest                                8    25.08 KB         122          84         542 |
-| Bash                               14    29.84 KB         135         210         663 |
-| Objective-C                         3    36.60 KB         290         150         776 |
-| Rakefile                           56    49.90 KB         173          68        1247 |
-| CSS                                22   169.58 KB         269          92        1403 |
-| Pascal                              8    82.84 KB         438         416        2032 |
-| Batch                              25    69.00 KB         321           2        2125 |
-| GNU Style Assembly                 40    84.70 KB         497         312        2710 |
-| D                                 232   128.49 KB         375           0        3138 |
-| Ada                                20   173.98 KB        1198        1120        3362 |
-| Go                                  5   137.84 KB         605         447        3911 |
-| Automake                           76   214.18 KB        1030        1407        4550 |
-| CMake                             135   302.33 KB        1300        2346        5614 |
-| Visual Studio Solution             48   660.20 KB           0           0        6971 |
-| ReStructuredText                   57   510.73 KB        4655           0       11246 |
-| Python                             96   872.35 KB        4125       10268       15339 |
-| C++ Header                         76   998.84 KB        1745        1793       17218 |
-| Ruby                              175   594.49 KB        3501        3700       18238 |
-| SVG                               212     2.59 MB         267        1597       19680 |
-| JavaScript                        294     1.41 MB        4375        2208       19874 |
-| XML                               236     1.23 MB        2852        1681       22814 |
-| Autoconf                          141     1.03 MB        3643        4739       22940 |
-| Shell                             281     1.13 MB        5171        6683       28811 |
-| Assembly                           36   661.32 KB        5535        1056       30654 |
-| JSON                             1116     1.29 MB           3           0       34131 |
-| Yaml                             1277     1.41 MB        4377        3017       44398 |
-| Perl                               98     1.69 MB        7408        8714       49675 |
-| Toml                             1667     2.22 MB        9107       15243       54844 |
-| Html                              252     1.55 MB         987          21       63765 |
-| Visual Studio Project              72     2.80 MB           0           0       68806 |
-| C++                               194     2.82 MB       13367        8699       72971 |
-| C Header                         1962    13.68 MB       48885      154409      174226 |
-| Markdown                         2981    10.93 MB       80716           0      215636 |
-| C                                2274    35.55 MB      201292      163029      928637 |
-| Plain Text                        591    36.28 MB       22670           0     2057371 |
-| Rust                            34720   310.92 MB      765390     1340059     7375701 |
+│ Autoconf                          533   515.91 KB         100         992       21399 │
+│ Bash                              148   420.09 KB        1183         592       10153 │
+│ C                                 149   149.31 KB         970        1671        3065 │
+│ C Header                           25     6.94 MB        9975      109175       20975 │
+│ GNU Style Assembly               2946     8.96 MB       48895       43894      285473 │
+│ Go                             463514     4.44 GB    13873486    22200757   106047029 │
+│ Html                               50    950.00 B           0           0          50 │
+│ Ini                                24     5.70 KB          48           0         240 │
+│ JSON                            21759  1011.18 MB         100           0    23771190 │
+│ Lua                                25   419.92 KB         750         100       11875 │
+│ Markdown                        18270   162.09 MB      530001           0     1794019 │
+│ Plain Text                       1161     5.50 MB        7186           0      176276 │
+│ PowerShell                        174     2.92 MB        8947       74817        1149 │
+│ Protocol Buffer                  4489    51.42 MB      220374      684092      425720 │
+│ Python                            175   581.23 KB        2975        5500        8750 │
+│ SVG                               101     1.22 MB         101         101        9532 │
+│ Shell                            9470    56.70 MB      189547      361195      998808 │
+│ Toml                              299   342.58 KB        3667        4325        7223 │
+│ Yaml                            38405   140.98 MB       31308       31043     5317632 │
 ├───────────────────────────────────────────────────────────────────────────────────────┤
-| Sum                             49529   434.24 MB     1197028     1733839    11387167 |
+│ Sum                            561717     5.86 GB    14929613    23518254   138910558 │
 └───────────────────────────────────────────────────────────────────────────────────────┘
+cloc .  23.21s user 153.47s system 239% cpu 1:13.72 total
 ```
 
 ### Install
