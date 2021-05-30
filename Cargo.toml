@@ -20,6 +20,7 @@ include = [
 structopt = "0.3"
 num_cpus = "1.0"
 lazy_static = "1.4"
+mimalloc = "0.1"
 
 [profile.release]
 opt-level = 'z'

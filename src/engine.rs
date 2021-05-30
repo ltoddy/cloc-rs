@@ -32,12 +32,8 @@ impl Engine {
     }
 
     pub fn serve(self) -> Report {
-        let Self {
-            entry,
-            mut explorer,
-            calculator,
-            reporter,
-        } = self;
+        #[rustfmt::skip]
+        let Self { entry, mut explorer, calculator, reporter } = self;
         let spinner = Spinner::new();
 
         spinner.start();

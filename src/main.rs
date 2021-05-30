@@ -22,12 +22,14 @@ use crate::util::compare;
 
 type Result<T> = std::result::Result<T, crate::error::Error>;
 
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 fn main() {
     let now = Instant::now();
 
-    let opt: Options = Options::from_args();
     #[rustfmt::skip]
-    let Options { sort_by, order_by, entry, ignore_file, .. } = opt;
+    let Options { sort_by, order_by, entry, ignore_file, .. } = Options::from_args();
 
     let entry = entry.and_then(|entry| fs::canonicalize(entry).ok()).unwrap_or_else(|| {
         eprintln!("No directory specified, so use current directory as entry.\n");
