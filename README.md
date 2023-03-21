@@ -11,7 +11,7 @@ Count, or compute differences of, lines of source code and comments fastly.
 e.g.
 
 ```
-macbox :: github/kubernetes » time cloc .
+macbox :: github/kubernetes » time rcloc .
      72.5313 secs
 ┌───────────────────────────────────────────────────────────────────────────────────────┐
 │ Language                        files        size       blank     comment        code │
@@ -38,13 +38,13 @@ macbox :: github/kubernetes » time cloc .
 ├───────────────────────────────────────────────────────────────────────────────────────┤
 │ Sum                            561717     5.86 GB    14929613    23518254   138910558 │
 └───────────────────────────────────────────────────────────────────────────────────────┘
-cloc .  23.21s user 153.47s system 239% cpu 1:13.72 total
+rcloc .  23.21s user 153.47s system 239% cpu 1:13.72 total
 ```
 
 ### Install
 
 ```
-$ cargo install cloc
+$ cargo install rcloc
 ```
 
 or

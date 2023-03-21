@@ -72,7 +72,7 @@ impl FromStr for OrderBy {
 
 #[derive(StructOpt, Debug)]
 #[structopt(
-    name = "cloc",
+    name = "rcloc",
     author = "ltoddy - taoliu0509@gmail.com",
     about = r#"
         Count, or compute differences of, lines of source code and comments
