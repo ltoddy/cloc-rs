@@ -220,6 +220,7 @@ lazy_static! {
         language!("Elixir", vec!["ex", "exs"], vec!["#"]);
         language!("Elm", vec!["elm"], vec!["--"], vec![("{-", "-}")]);
         language!("Erlang", vec!["erl", "hrl"], vec!["%"]);
+        language!("Fortran", vec!["F", "f90", "f95", "f03", "f08", "f15", "f77", "f", "for", "ftn", "fpp"], vec!["!"]);
         language!("FreeMarker", vec!["ftl", "ftlh", "ftlx"], vec![], vec![("<#--", "-->")]);
         language!("F#", vec!["fs", "fsi", "fsx", "fsscript"], vec!["//"], vec![("(*", "*)")]);
         language!("Go", vec!["go"], vec!["//"], vec![("/*", "*/"), ("/**", "*/")]);
