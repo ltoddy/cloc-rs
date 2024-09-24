@@ -281,6 +281,7 @@ lazy_static! {
         language!("SVG", vec!["svg"], vec![], vec![("<!--", "-->")]);
         language!("Swift", vec!["swift"], vec!["//"], vec![("/*", "*/")]);
         language!("TCL", vec!["tcl"], vec!["#"]);
+        language!("Terraform", vec!["tf", "tfvars"], vec!["#", "//"], vec![("/*", "*/")]);
         language!("TeX", vec!["tex", "sty"], vec!["%"]);
         language!("Thrift", vec!["thrift"], vec!["#", "//"], vec![("/*", "*/")]);
         language!("Toml", vec!["toml"], vec!["#"]);
